@@ -10,7 +10,6 @@ public class MainController : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     [SerializeField] private GameObject UsernameMenu;
     [SerializeField] private GameObject ConnectPanel;
-
     [SerializeField] private InputField UsernameInput;
 
     [SerializeField] private InputField CreateInput;
@@ -65,7 +64,6 @@ public class MainController : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined a room!");
-
         // Start the game or perform any other necessary actions
         StartGame();
     }

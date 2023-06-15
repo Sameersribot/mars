@@ -14,6 +14,6 @@ public class multiplayerSpawner : MonoBehaviour
     private void SpawnPlayer()
     {
         float randomValue = Random.Range(-1f, 1f);
-        PhotonNetwork.Instantiate(playerPrefab.name, new Vector2(this.transform.position.x * randomValue, this.transform.position.y), Quaternion.identity, 0);
+        PhotonNetwork.Instantiate(playerPrefab.name, new Vector2(this.transform.position.x * randomValue, this.transform.position.y), Quaternion.identity);
     }
 }
