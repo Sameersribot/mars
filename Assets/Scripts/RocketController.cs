@@ -3,18 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using Cinemachine;
 using UnityEngine.Audio;
 
-public class RocketController : MonoBehaviour, IPunObservable
+public class RocketController : MonoBehaviour
 {
     public PhotonView photonView;
     public float speed = 5f;  // Speed of the rocket movement
     public float rotationSpeed = 200f;  // Speed of the rocket rotation
     public Joystick joystick;
     private Rigidbody2D rb;
-    private Vector2 currentDirection;    // Current movement direction of the rocket
+    public Vector2 currentDirection, movement;    // Current movement direction of the rocket
     private ParticleSystem propulsion;
     public GameObject playerCamera, cvCam;
     public GameObject playerCanvas;
@@ -26,20 +25,21 @@ public class RocketController : MonoBehaviour, IPunObservable
     public float fuelConsumptionRate = 4f;
     public float refuelRate = 20f;
     public Slider slider;
-    private float currentFuel;
+    public float currentFuel;
+
 
     // public AudioSource audio;
     private void Awake()
     {
-        PhotonNetwork.SendRate = 60; //Default is 30
-        PhotonNetwork.SerializationRate = 60;
+        PhotonNetwork.SendRate = 40; //Default is 30
+        PhotonNetwork.SerializationRate = 10;
         if (photonView.IsMine)
         {
             playerCanvas.SetActive(true);
             playerCamera.SetActive(true);
             cvCam.SetActive(true);
             text.text = PhotonNetwork.NickName;
-        }
+        }  
     }
     void Start()
     {
@@ -68,7 +68,7 @@ public class RocketController : MonoBehaviour, IPunObservable
 
     private void rocketMovement()
     {
-        Vector2 movement = new Vector2(joystick.Horizontal * speed, joystick.Vertical * speed);
+        movement = new Vector2(joystick.Horizontal * speed, joystick.Vertical * speed);
         zoon();
         
         if (movement.magnitude > 0.1f && currentFuel>=0f)
@@ -96,24 +96,6 @@ public class RocketController : MonoBehaviour, IPunObservable
         // Adjust the virtual camera's field of view
         virtualCamera.m_Lens.FieldOfView = Mathf.Clamp(40.7f + rb.velocity.magnitude , 40.7f, 59.2f);
     }
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(rb.position);
-            stream.SendNext(rb.rotation);
-            stream.SendNext(rb.velocity);
-        }
-        else
-        {
-            rb.position = (Vector3)stream.ReceiveNext();
-            transform.rotation = (Quaternion)stream.ReceiveNext();
-            rb.velocity = (Vector3)stream.ReceiveNext();
-
-            float lag = Mathf.Abs((float)(PhotonNetwork.Time - info.timestamp));
-            rb.position += rb.velocity * lag;
-        }
-    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -121,11 +103,19 @@ public class RocketController : MonoBehaviour, IPunObservable
         {
             StartRefueling();
         }
+        if (photonView.IsMine)
+        {
+            // Check if the collision is with another player
+            RocketController otherPlayerCollision = collision.gameObject.GetComponent<RocketController>();
+            if (otherPlayerCollision != null && otherPlayerCollision.photonView.IsMine)
+            {
+                Debug.Log("we have collided");
+            }
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-
         if (collision.gameObject.tag == "petrolpump")
         {
             StopRefueling();

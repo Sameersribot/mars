@@ -17,17 +17,49 @@ public class MainController : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject StartButton;
 
     [SerializeField]  private int maxPlayers = 4;
+    [SerializeField] private GameObject ccamera;
+    public float shiftAmount = 0.2f;      // Amount of camera shift based on tilt controls
 
-
+    private Vector2 tiltInput;            // Store the tilt input values
+    private Vector3 startPosition;
+    public float tiltSpeed = 2f;          // Speed of camera movement based on tilt controls
+    public float maxHorizontalOffset = 2.8f;  // Maximum horizontal offset from the center of the screen
+    public float maxVerticalOffset = 2.8f;    // Maximum vertical offset from the center of the screen
 
     private void Start()
     {
-        UsernameMenu.SetActive(true); 
+        UsernameMenu.SetActive(true);
+        startPosition = ccamera.transform.position;
     }
 
     private void Awake()
     {
         PhotonNetwork.ConnectUsingSettings();
+    }
+
+    private void Update()
+    {
+        // Read the tilt input
+        tiltInput.x = Input.acceleration.x;
+        tiltInput.y = Input.acceleration.y;
+    }
+    private void LateUpdate()
+    {
+        // Calculate the movement vector based on tilt input
+        Vector3 movement = new Vector3(tiltInput.x * tiltSpeed, tiltInput.y * tiltSpeed, 0f);
+
+        // Calculate the target position after applying movement
+        Vector3 targetPosition = new Vector3(startPosition.x + movement.x, startPosition.y + movement.y, startPosition.z);
+
+        // Clamp the target position within the limits of the screen
+        float clampedX = Mathf.Clamp(targetPosition.x, startPosition.x - maxHorizontalOffset, startPosition.x + maxHorizontalOffset);
+        float clampedY = Mathf.Clamp(targetPosition.y, startPosition.y - maxVerticalOffset, startPosition.y + maxVerticalOffset);
+
+        // Set the clamped target position
+        targetPosition = new Vector2(clampedX, clampedY);
+
+        // Move the camera towards the target position
+        ccamera.transform.position = Vector3.Lerp(startPosition, targetPosition, Time.deltaTime);
     }
 
     public override void OnConnectedToMaster()
