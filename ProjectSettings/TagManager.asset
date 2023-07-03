@@ -6,6 +6,7 @@ TagManager:
   tags:
   - obstacle
   - petrolpump
+  - fuel
   layers:
   - Default
   - TransparentFX

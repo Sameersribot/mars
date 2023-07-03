@@ -18,6 +18,10 @@ public class MainController : MonoBehaviourPunCallbacks
 
     [SerializeField]  private int maxPlayers = 4;
     [SerializeField] private GameObject ccamera;
+    [SerializeField] private GameObject leftButton, Rightbutton;
+    public SpriteRenderer spriteRenderer;
+    public Sprite[] sprites; // Array of different sprites
+    private int currentIndex = 0; // Current index of the sprite
     public float shiftAmount = 0.2f;      // Amount of camera shift based on tilt controls
 
     private Vector2 tiltInput;            // Store the tilt input values
@@ -30,6 +34,10 @@ public class MainController : MonoBehaviourPunCallbacks
     {
         UsernameMenu.SetActive(true);
         startPosition = ccamera.transform.position;
+        if (sprites.Length > 0)
+        {
+            spriteRenderer.sprite = sprites[currentIndex];
+        }
     }
 
     private void Awake()
@@ -65,7 +73,6 @@ public class MainController : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("OnConnectedToMaster() was called by PUN.");
-        PhotonNetwork.JoinRandomRoom();
     }
     public void changeUserNameInput()
     {
@@ -83,6 +90,10 @@ public class MainController : MonoBehaviourPunCallbacks
         UsernameMenu.SetActive(false);
         PhotonNetwork.NickName = UsernameInput.text;
     }
+    public void OnclickPlay()
+    {
+        PhotonNetwork.JoinRandomRoom();
+    }
     public void CreateRoom()
     {
         RoomOptions roomOptions = new RoomOptions();
@@ -92,6 +103,7 @@ public class MainController : MonoBehaviourPunCallbacks
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         Debug.Log("Failed to join a random room. Creating a new room...");
+        CreateRoom();
     }
     public override void OnJoinedRoom()
     {
@@ -103,6 +115,14 @@ public class MainController : MonoBehaviourPunCallbacks
     {
         // Add your game start logic here
         Debug.Log("Game started!");
+        /*if(PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            
+        }*/
+        // Set the integer value as a custom property for the local player
+
+        PlayerPrefs.SetInt("MyIntegerData", currentIndex);
+        PlayerPrefs.Save();
         PhotonNetwork.LoadLevel("SampleScene");
     }
     public void JoinRoom()
@@ -111,5 +131,24 @@ public class MainController : MonoBehaviourPunCallbacks
         roomOptions.MaxPlayers = maxPlayers;
         // will change this function to only joinroom in
         PhotonNetwork.JoinOrCreateRoom(JoinInput.text, roomOptions, TypedLobby.Default);
+    }
+    public void changeSkin()
+    {
+        leftButton.SetActive(true);
+        Rightbutton.SetActive(true);
+    }
+    public void leftButtonClick()
+    {
+        // Decrease the current index and wrap around
+        currentIndex = (currentIndex - 1 + sprites.Length) % sprites.Length;
+        spriteRenderer.sprite = sprites[currentIndex];
+        Debug.Log(currentIndex);
+    }
+    public void rightButtonclick()
+    {
+        // Increase the current index and wrap around
+        currentIndex = (currentIndex + 1) % sprites.Length;
+        spriteRenderer.sprite = sprites[currentIndex];
+        Debug.Log(currentIndex);
     }
 }

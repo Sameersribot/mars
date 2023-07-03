@@ -165,6 +165,7 @@ Library: lib_burst_generated
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.Timeline.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.Notifications.Android.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\PhotonRealtime.dll
+--root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\CFXRDemo.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\PhotonUnityNetworking.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\PhotonUnityNetworking.Utilities.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.2D.SpriteShape.Runtime.dll
@@ -172,9 +173,11 @@ Library: lib_burst_generated
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.2D.Common.Runtime.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.2D.IK.Runtime.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\PhotonChat.dll
+--root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\CFXRRuntime.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.2D.Tilemap.Extras.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.Profiling.Core.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.InternalAPIEngineBridge.001.dll
+--root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\KinoBloom.Runtime.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.Subsystem.Registration.dll
 --assembly-folder=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\
 --pdb-search-paths=Temp/ManagedSymbols/
