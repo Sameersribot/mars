@@ -1,6 +1,5 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
@@ -19,7 +18,7 @@ public class RocketController : MonoBehaviour
     public Vector3 otherPlayerPosition;
     private ParticleSystem propulsion;
     public GameObject playerCamera, cvCam, otherPlayerCollision;
-    public GameObject playerCanvas;
+    public GameObject playerCanvas, restartCanvas;
     public GameObject background;
     public Text text;
     private AudioSource audio;
@@ -29,12 +28,13 @@ public class RocketController : MonoBehaviour
     public float refuelRate = 20f;
     public Slider slider;
     public float currentFuel, fuelpower;
+    public GameObject explosionPrefab;
 
     // public AudioSource audio;
     private void Awake()
     {
         PhotonNetwork.SendRate = 40; //Default is 30
-        PhotonNetwork.SerializationRate = 20;
+        PhotonNetwork.SerializationRate = 10;
         fuelpower = 60f;
         if (photonView.IsMine)
         {
@@ -67,7 +67,6 @@ public class RocketController : MonoBehaviour
         {
             rocketMovement();
             //  dont know what its about ..background.transform.position = new Vector2(transform.position.x, transform.position.y);
-            Debug.Log(rb.velocity.magnitude);
         }
     }
 
@@ -76,30 +75,27 @@ public class RocketController : MonoBehaviour
         movement = new Vector2(joystick.Horizontal * speed, joystick.Vertical * speed);
         zoon();
         
-        if (movement.magnitude > 0.1f && currentFuel>=0f)
+        if (movement.magnitude > 0.1f)// && currentFuel >= 0f
         {
-            if(rb.velocity.magnitude < 15)
+            float dotProduct = Vector3.Dot(rb.velocity.normalized, currentDirection);
+            Debug.Log(dotProduct);
+            if (dotProduct < 0)
             {
-                rb.AddForce(movement);
+                rb.AddForce(movement * 5f);
             }
-            
-            else if(rb.velocity.magnitude > 15 && rb.velocity.y > 0)
+            else if (dotProduct > 0)
             {
-                rb.AddForce(movement / 2);
-            }
-            else if(rb.velocity.magnitude > 13 && rb.velocity.y < 0)
-            {
-                if(movement.y > 0)
+                Debug.Log(rb.velocity.magnitude);
+                if(rb.velocity.magnitude > 15)
                 {
-                    movement.y *= 1.2f;
-                    rb.AddForce(movement);
-                } 
-                else if(movement.y < 0)
+                    rb.AddForce(movement/5);
+                }
+                else
                 {
-                    movement.y /= 4;
                     rb.AddForce(movement);
                 }
             }
+
             //rb.velocity =movement;
             propulsion.Play(true);
             propulsion.startLifetime = movement.magnitude * 0.182f;
@@ -109,8 +105,8 @@ public class RocketController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
             float fuelConsumed = fuelConsumptionRate * Time.deltaTime;
             currentFuel -= fuelConsumed;
-            Debug.Log(currentFuel);
             audio.Play();
+           
         }
         else
         {
@@ -130,24 +126,31 @@ public class RocketController : MonoBehaviour
         {
             StartRefueling();
         }
-        
-        /*if (photonView.IsMine)
-        {
-            // Check if the collision is with another player
-             otherPlayerCollision = collision.gameObject;
-             if (otherPlayerCollision != null)
-             {
-                // Get the other player's PhotonView
-                otherPlayerPhotonView = otherPlayerCollision.GetPhotonView();
 
-                // Get the other player's position
-                otherPlayerPosition = new Vector3(otherPlayerPhotonView.transform.position.x, otherPlayerPhotonView.transform.position.y, -12.2f);
-                Debug.Log("Other Player Position: " + otherPlayerPosition);
-             }
-        } */
-        else if(collision.gameObject.tag == "fuel")
+        if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("collided");
+            if (photonView.IsMine)
+            {
+                Rigidbody2D otherRigidbody = collision.gameObject.GetComponent<Rigidbody2D>();
+
+                // Compare the magnitudes of velocities
+                float myVelocityMagnitude = rb.velocity.magnitude;
+                float otherVelocityMagnitude = otherRigidbody.velocity.magnitude;
+
+                if (myVelocityMagnitude > otherVelocityMagnitude)
+                {
+                    // Destroy the other player's game object
+                    PhotonNetwork.Destroy(collision.gameObject);
+                    photonView.RPC("collisionWithRocket", RpcTarget.AllViaServer, collision.gameObject.transform.position, Quaternion.identity);
+                }
+                else if (myVelocityMagnitude < otherVelocityMagnitude)
+                {
+                    // Destroy the current player's game object
+                    PhotonNetwork.Destroy(gameObject);
+                    photonView.RPC("collisionWithRocket", RpcTarget.AllViaServer, transform.position, Quaternion.identity);
+                    restartCanvas.SetActive(true);
+                }
+            }
         }
     }
 
@@ -163,6 +166,15 @@ public class RocketController : MonoBehaviour
         if (collision.gameObject.tag == "fuel")
         {
             currentFuel = Mathf.Clamp(currentFuel + fuelpower, 0f, fuelCapacity);
+            Destroy(collision.gameObject);
+        }
+        
+        else if(collision.gameObject.tag == "redPower")
+        {
+            Destroy(collision.gameObject);
+        }
+        else if(collision.gameObject.tag == "bluePower")
+        {
             Destroy(collision.gameObject);
         }
     }
@@ -186,6 +198,26 @@ public class RocketController : MonoBehaviour
         spawnPoint = new Vector2(20f * UnityEngine.Random.Range(-1f, 1f), 20f * UnityEngine.Random.Range(-1f, 1f));
         PhotonNetwork.Instantiate(petrolPrefab.name, spawnPoint, Quaternion.identity);
     }*/
+    //[PunRPC]
+    /*private void ShootBullet(Vector3 position, Quaternion rotation, Vector2 direction)
+    {
+        GameObject bullet = Instantiate(bulletPrefab, position, rotation);
+        Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
+        bulletRigidbody.velocity = direction.normalized * 10f; // Adjust bullet speed as needed
+    }*/
+    /*public void onClickFire() 
+    {
+        photonView.RPC("ShootBullet", RpcTarget.AllViaServer, bulletSpawnPoint.position, bulletSpawnPoint.rotation, currentDirection);
+    }*/
+    [PunRPC]
+    private void collisionWithRocket(Vector3 position, Quaternion rotation)
+    {
+        GameObject bullet = Instantiate(explosionPrefab, position, rotation);
+    }
+    public void restartMatch()
+    {
+        SceneManager.LoadScene("lobbyscene");
+    }
 }
 
 

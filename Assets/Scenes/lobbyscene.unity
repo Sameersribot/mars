@@ -514,7 +514,6 @@ MonoBehaviour:
   JoinInput: {fileID: 821433087}
   StartButton: {fileID: 583756092}
   maxPlayers: 4
-  skinNumber: 0
   ccamera: {fileID: 758311972}
   leftButton: {fileID: 459676845}
   Rightbutton: {fileID: 1285481739}
@@ -524,6 +523,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7262b97c4480512458898593bada3e6a, type: 3}
   - {fileID: 21300000, guid: 7cab25abf6d1b8545b573e763d91e76d, type: 3}
   - {fileID: 21300000, guid: 3c5fa8c40fead4444b87caea81ae49c0, type: 3}
+  - {fileID: 21300000, guid: 8dc6d49a7ca787c4c9103b3d966f0e51, type: 3}
   shiftAmount: 0.28
   tiltSpeed: 4
   maxHorizontalOffset: 15
@@ -1156,7 +1156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9056604, g: 0.7358557, b: 0.64421505, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1502,6 +1502,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1013099869}
   - component: {fileID: 1013099868}
+  - component: {fileID: 1013099870}
   m_Layer: 0
   m_Name: _c4b7831f-1dc6-4865-86b7-f3e3a426e214
   m_TagString: Untagged
@@ -1550,7 +1551,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 48dc4fa53b7a64245845ce1c9cd9ec53, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 62eab9bfdf2687644838d113723f7071, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1576,6 +1577,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1013099870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013099867}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e17ab3cde0916f146a15bb9d5ccf334f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1087625062
 GameObject:
   m_ObjectHideFlags: 0
@@ -2948,7 +2961,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8078432, g: 0.56078434, b: 0.427451, a: 0.972549}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

@@ -17,32 +17,32 @@ MonoBehaviour:
     m_End: 183
     m_Order: 0
     m_Sprites:
-    - {fileID: 21300000, guid: 0bd2f2246853f5c40bce71ef4af08bbd, type: 3}
-  m_FillTexture: {fileID: 0}
+    - {fileID: 21300000, guid: 9f11bc9b9c22e2d4198c8ff4ea8b2689, type: 3}
+  m_FillTexture: {fileID: 2800000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
   m_CornerSprites:
   - m_CornerType: 0
     m_Sprites:
-    - {fileID: 0}
+    - {fileID: 21300000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
   - m_CornerType: 1
     m_Sprites:
-    - {fileID: 0}
+    - {fileID: 21300000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
   - m_CornerType: 2
     m_Sprites:
-    - {fileID: 0}
+    - {fileID: 21300000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
   - m_CornerType: 3
     m_Sprites:
-    - {fileID: 0}
+    - {fileID: 21300000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
   - m_CornerType: 4
     m_Sprites:
-    - {fileID: 0}
+    - {fileID: 21300000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
   - m_CornerType: 5
     m_Sprites:
-    - {fileID: 0}
+    - {fileID: 21300000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
   - m_CornerType: 6
     m_Sprites:
-    - {fileID: 0}
+    - {fileID: 21300000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
   - m_CornerType: 7
     m_Sprites:
-    - {fileID: 0}
-  m_FillOffset: 0.088
+    - {fileID: 21300000, guid: 056767149da6e9a40844dc41a7249540, type: 3}
+  m_FillOffset: 0.109
   m_UseSpriteBorders: 0

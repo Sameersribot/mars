@@ -16,7 +16,7 @@ public class MainController : MonoBehaviourPunCallbacks
     [SerializeField] private InputField JoinInput;
     [SerializeField] private GameObject StartButton;
 
-    [SerializeField]  private int maxPlayers = 4;
+    [SerializeField]  private int maxPlayers = 20;
     [SerializeField] private GameObject ccamera;
     [SerializeField] private GameObject leftButton, Rightbutton;
     public SpriteRenderer spriteRenderer;
@@ -73,6 +73,7 @@ public class MainController : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("OnConnectedToMaster() was called by PUN.");
+        PhotonNetwork.JoinRandomRoom();
     }
     public void changeUserNameInput()
     {
@@ -92,7 +93,7 @@ public class MainController : MonoBehaviourPunCallbacks
     }
     public void OnclickPlay()
     {
-        PhotonNetwork.JoinRandomRoom();
+        JoinRoom();
     }
     public void CreateRoom()
     {
@@ -103,12 +104,12 @@ public class MainController : MonoBehaviourPunCallbacks
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         Debug.Log("Failed to join a random room. Creating a new room...");
-        CreateRoom();
     }
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined a room!");
         // Start the game or perform any other necessary actions
+        Debug.Log(PhotonNetwork.CountOfPlayers);
         StartGame();
     }
     private void StartGame()
