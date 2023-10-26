@@ -5989,6 +5989,7 @@ MonoBehaviour:
   otherPlayerPhotonView: {fileID: 0}
   speed: 4.25
   rotationSpeed: 20
+  missileSpeed: 0
   joystick: {fileID: 6795191693561036153}
   currentDirection: {x: 0, y: 0}
   movement: {x: 0, y: 0}
@@ -5997,6 +5998,7 @@ MonoBehaviour:
   cvCam: {fileID: 6200884938575599084}
   otherPlayerCollision: {fileID: 0}
   playerCanvas: {fileID: 6200884937695833318}
+  restartCanvas: {fileID: 0}
   background: {fileID: 2608948485114541956}
   text: {fileID: 1189625052745543521}
   virtualCamera: {fileID: 6200884938575599087}
@@ -6006,9 +6008,9 @@ MonoBehaviour:
   slider: {fileID: 8840338997148753187}
   currentFuel: 0
   fuelpower: 0
-  bulletPrefab: {fileID: 8555497787751395981, guid: 01a18dbe71bb43d41b398317e82a86a9, type: 3}
   explosionPrefab: {fileID: 1134129239631916, guid: 7e48ba6b1b968764490bbc70b66e3fe1, type: 3}
-  bulletSpawnPoint: {fileID: 6200884937972078503}
+  missile: {fileID: 0}
+  bulletMissile: {fileID: 0}
 --- !u!50 &6200884937972078502
 Rigidbody2D:
   serializedVersion: 4

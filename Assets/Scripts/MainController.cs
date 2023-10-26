@@ -16,12 +16,12 @@ public class MainController : MonoBehaviourPunCallbacks
     [SerializeField] private InputField JoinInput;
     [SerializeField] private GameObject StartButton;
 
-    [SerializeField]  private int maxPlayers = 20;
+    [SerializeField] private int maxPlayers = 20;
     [SerializeField] private GameObject ccamera;
     [SerializeField] private GameObject leftButton, Rightbutton;
     public SpriteRenderer spriteRenderer;
     public Sprite[] sprites; // Array of different sprites
-    private int currentIndex = 0; // Current index of the sprite
+    private int currentIndex = 4; // Current index of the sprite
     public float shiftAmount = 0.2f;      // Amount of camera shift based on tilt controls
 
     private Vector2 tiltInput;            // Store the tilt input values
@@ -43,6 +43,7 @@ public class MainController : MonoBehaviourPunCallbacks
     private void Awake()
     {
         PhotonNetwork.ConnectUsingSettings();
+        //playButton.SetActive(false);
     }
 
     private void Update()
@@ -93,13 +94,12 @@ public class MainController : MonoBehaviourPunCallbacks
     }
     public void OnclickPlay()
     {
-        JoinRoom();
-    }
+        JoinRoom();    }
     public void CreateRoom()
     {
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
-        PhotonNetwork.CreateRoom(CreateInput.text, roomOptions, null);
+        PhotonNetwork.CreateRoom(Random.Range(1f,2f).ToString(), roomOptions, null);
     }
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
@@ -131,7 +131,7 @@ public class MainController : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
         // will change this function to only joinroom in
-        PhotonNetwork.JoinOrCreateRoom(JoinInput.text, roomOptions, TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom(Random.Range(1f, 2f).ToString(), roomOptions, TypedLobby.Default);
     }
     public void changeSkin()
     {

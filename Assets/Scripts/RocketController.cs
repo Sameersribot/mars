@@ -4,32 +4,32 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
 using UnityEngine.Audio;
-using Photon.Realtime;
 using System;
 
 public class RocketController : MonoBehaviour
 {
     public PhotonView photonView, otherPlayerPhotonView;
     public float speed = 5f;  // Speed of the rocket movement
-    public float rotationSpeed = 200f;  // Speed of the rocket rotation
+    public float rotationSpeed = 200f, missileSpeed;  // Speed of the rocket rotation
     public Joystick joystick;
     private Rigidbody2D rb;
     public Vector2 currentDirection, movement;    // Current movement direction of the rocket
-    public Vector3 otherPlayerPosition;
+    public Vector3 otherPlayerPosition, missilePosition, playerSpwanPosition;
     private ParticleSystem propulsion;
     public GameObject playerCamera, cvCam, otherPlayerCollision;
-    public GameObject playerCanvas, restartCanvas;
+    public GameObject playerCanvas;
     public GameObject background;
     public Text text;
     private AudioSource audio;
+    private int playerId;
     public CinemachineVirtualCamera virtualCamera;
     public float fuelCapacity = 100f;
     public float fuelConsumptionRate = 4f;
     public float refuelRate = 20f;
     public Slider slider;
     public float currentFuel, fuelpower;
-    public GameObject explosionPrefab;
-
+    public GameObject explosionPrefab, missile, bulletMissile; //restartButton
+     
     // public AudioSource audio;
     private void Awake()
     {
@@ -42,6 +42,7 @@ public class RocketController : MonoBehaviour
             playerCamera.SetActive(true);
             cvCam.SetActive(true);
             text.text = PhotonNetwork.NickName;
+            //restartButton.SetActive(false);
         }  
     }
     void Start()
@@ -50,7 +51,7 @@ public class RocketController : MonoBehaviour
         propulsion = GetComponent<ParticleSystem>();
         audio = GetComponent<AudioSource>();
         currentFuel = fuelCapacity;
-
+        playerSpwanPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         // Find the Cinemachine virtual camera by its tag
         
 
@@ -117,7 +118,7 @@ public class RocketController : MonoBehaviour
     void zoon()
     {
         // Adjust the virtual camera's field of view
-        virtualCamera.m_Lens.FieldOfView = Mathf.Clamp(40.7f + rb.velocity.magnitude , 40.7f, 59.2f);
+        virtualCamera.m_Lens.FieldOfView = Mathf.Clamp(55.5f + rb.velocity.magnitude , 55.5f, 69.1f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -126,6 +127,7 @@ public class RocketController : MonoBehaviour
         {
             StartRefueling();
         }
+
 
         if (collision.gameObject.tag == "Player")
         {
@@ -146,11 +148,15 @@ public class RocketController : MonoBehaviour
                 else if (myVelocityMagnitude < otherVelocityMagnitude)
                 {
                     // Destroy the current player's game object
-                    PhotonNetwork.Destroy(gameObject);
                     photonView.RPC("collisionWithRocket", RpcTarget.AllViaServer, transform.position, Quaternion.identity);
-                    restartCanvas.SetActive(true);
                 }
             }
+        }
+        else if(collision.gameObject.tag == "missile")
+        {
+            Destroy(collision.gameObject);
+            photonView.RPC("collisionWithRocket", RpcTarget.AllViaServer, transform.position, Quaternion.identity);
+            //restartButton.SetActive(true);
         }
     }
 
@@ -179,7 +185,6 @@ public class RocketController : MonoBehaviour
         }
     }
 
-
     private void StartRefueling()
     {
         InvokeRepeating("IncreaseFuel", 0f, 0.1f);
@@ -198,25 +203,42 @@ public class RocketController : MonoBehaviour
         spawnPoint = new Vector2(20f * UnityEngine.Random.Range(-1f, 1f), 20f * UnityEngine.Random.Range(-1f, 1f));
         PhotonNetwork.Instantiate(petrolPrefab.name, spawnPoint, Quaternion.identity);
     }*/
-    //[PunRPC]
-    /*private void ShootBullet(Vector3 position, Quaternion rotation, Vector2 direction)
+    [PunRPC]
+    private void ShootBullet(Vector3 position, Quaternion rotation, Vector2 direction, Vector2 force)
     {
-        GameObject bullet = Instantiate(bulletPrefab, position, rotation);
+        GameObject bullet = Instantiate(bulletMissile, position, rotation);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
-        bulletRigidbody.velocity = direction.normalized * 10f; // Adjust bullet speed as needed
-    }*/
-    /*public void onClickFire() 
+        //bulletRigidbody.velocity = currentDirection * missileSpeed;
+        bulletRigidbody.AddForce(force);
+        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), bullet.GetComponent<Collider2D>());
+    }
+    public void onClickFire() 
     {
-        photonView.RPC("ShootBullet", RpcTarget.AllViaServer, bulletSpawnPoint.position, bulletSpawnPoint.rotation, currentDirection);
-    }*/
+        //if(movement.magnitude > 0)ss
+        //{
+            missilePosition = new Vector3(this.transform.position.x + rb.velocity.x * 0.1f, this.transform.position.y + rb.velocity.y * 0.1f, this.transform.position.z);
+            Vector2 missileDirection = new Vector2(transform.up.x, transform.up.y);
+            Vector2 randomForce = currentDirection * missileSpeed*50f;
+            photonView.RPC("ShootBullet", RpcTarget.AllViaServer,  missilePosition, this.transform.rotation, missileDirection, randomForce);
+            rb.AddForce(new Vector2(UnityEngine.Random.Range(-25f, 25f), UnityEngine.Random.Range(-25f, 25f)));
+        //}
+    }
     [PunRPC]
     private void collisionWithRocket(Vector3 position, Quaternion rotation)
     {
         GameObject bullet = Instantiate(explosionPrefab, position, rotation);
+        if (photonView.IsMine)
+        {
+            this.gameObject.SetActive(false);
+            Invoke("Respawn", 3f);
+        }
     }
-    public void restartMatch()
+    
+    private void Respawn()
     {
-        SceneManager.LoadScene("lobbyscene");
+        // Set the position and enable the GameObject
+        transform.position = playerSpwanPosition;
+        this.gameObject.SetActive(true);
     }
 }
 

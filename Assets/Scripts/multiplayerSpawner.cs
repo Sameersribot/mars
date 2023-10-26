@@ -43,8 +43,8 @@ public class multiplayerSpawner : MonoBehaviour
     private void SpawnPetrol()
     {
         // Generate a random position within a specified range
-        float x = UnityEngine.Random.Range(-25f, 25f);
-        float y = UnityEngine.Random.Range(-25f, 25f);
+        float x = UnityEngine.Random.Range(-272f, 154f);
+        float y = UnityEngine.Random.Range(377f, 583f);
         Vector3 randomPosition = new Vector3(x, y, -2.2f);
 
         // Instantiate the object at the random position
@@ -52,8 +52,8 @@ public class multiplayerSpawner : MonoBehaviour
     }
     private void SpawnPower()
     {
-        float x = UnityEngine.Random.Range(-25f, 25f);
-        float y = UnityEngine.Random.Range(-25f, 50f);
+        float x = UnityEngine.Random.Range(-272f, 154f);
+        float y = UnityEngine.Random.Range(377f, 583f);
         Vector3 randomPowerPosition = new Vector3(x, y, -2.2f);
         int typeOfPower = UnityEngine.Random.Range(0, powers.Length + 1);
 

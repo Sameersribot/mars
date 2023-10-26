@@ -41,6 +41,8 @@ MonoBehaviour:
   - RespawnSpaceship
   - ShootBullet
   - collisionWithRocket
+  - Die
+  - RespawnPlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

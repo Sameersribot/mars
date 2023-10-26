@@ -10,6 +10,8 @@ TagManager:
   - FxTemporaire
   - redPower
   - bluePower
+  - missile
+  - wall
   layers:
   - Default
   - TransparentFX
