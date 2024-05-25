@@ -7,10 +7,12 @@ public class multiplayerSpawner : MonoBehaviour
 {
     public GameObject[] skins;
     public GameObject[] powers;
+    public GameObject[] missiles;
     public GameObject petrolPrefab;  // Reference to the petrol prefab
     public Vector2 spawnPoint;    // Point where petrol objects should be spawned
     public float spawnInterval = 15f;  // Time interval between petrol spawns
     public float spawnPowerInterval = 15f;  // Time interval between petrol spawns
+    public float spawnMissilesInterval = 8f;
 
 
     private void Awake()
@@ -43,8 +45,8 @@ public class multiplayerSpawner : MonoBehaviour
     private void SpawnPetrol()
     {
         // Generate a random position within a specified range
-        float x = UnityEngine.Random.Range(-272f, 154f);
-        float y = UnityEngine.Random.Range(377f, 583f);
+        float x = UnityEngine.Random.Range(-73f, -12f);
+        float y = UnityEngine.Random.Range(336f, 310f);
         Vector3 randomPosition = new Vector3(x, y, -2.2f);
 
         // Instantiate the object at the random position
@@ -52,8 +54,8 @@ public class multiplayerSpawner : MonoBehaviour
     }
     private void SpawnPower()
     {
-        float x = UnityEngine.Random.Range(-272f, 154f);
-        float y = UnityEngine.Random.Range(377f, 583f);
+        float x = UnityEngine.Random.Range(-73f, -12f);
+        float y = UnityEngine.Random.Range(336f, 310f);
         Vector3 randomPowerPosition = new Vector3(x, y, -2.2f);
         int typeOfPower = UnityEngine.Random.Range(0, powers.Length + 1);
 
@@ -73,5 +75,27 @@ public class multiplayerSpawner : MonoBehaviour
             }
         }
     }
-    
+    private void spawnMissile()
+    {
+        float x = UnityEngine.Random.Range(-73f, -12f);
+        float y = UnityEngine.Random.Range(336f, 310f);
+        Vector3 randomPowerPosition = new Vector3(x, y, -2.2f);
+        int typeOfPower = UnityEngine.Random.Range(0, missiles.Length + 1);
+
+        for (int i = 0; i < missiles.Length; i++)
+        {
+            if (typeOfPower == i)
+            {
+                GameObject currentPower = missiles[i];
+
+                // Do something with the current GameObject
+                Instantiate(currentPower, randomPowerPosition, Quaternion.identity);
+
+            }
+            else
+            {
+                Debug.Log("Integer Value not found");
+            }
+        }
+    }
 }

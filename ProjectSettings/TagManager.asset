@@ -12,6 +12,8 @@ TagManager:
   - bluePower
   - missile
   - wall
+  - teleporter
+  - pumpwall
   layers:
   - Default
   - TransparentFX

@@ -120,6 +120,7 @@ Library: lib_burst_generated
 --compilation-defines=PUN_2_0_OR_NEWER
 --compilation-defines=PUN_2_OR_NEWER
 --compilation-defines=PUN_2_19_OR_NEWER
+--compilation-defines=DOTWEEN
 --compilation-defines=PACKAGE_PHYSICS
 --compilation-defines=PACKAGE_PHYSICS2D
 --compilation-defines=PACKAGE_TILEMAP
@@ -176,6 +177,7 @@ Library: lib_burst_generated
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\CFXRRuntime.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.2D.Tilemap.Extras.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.Profiling.Core.dll
+--root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Assembly-CSharp-firstpass.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.InternalAPIEngineBridge.001.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\KinoBloom.Runtime.dll
 --root-assembly=C:\Users\sriva\mars\mars\Temp\StagingArea\Data\Managed\Unity.Subsystem.Registration.dll

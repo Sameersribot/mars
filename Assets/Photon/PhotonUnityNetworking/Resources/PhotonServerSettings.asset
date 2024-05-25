@@ -43,6 +43,11 @@ MonoBehaviour:
   - collisionWithRocket
   - Die
   - RespawnPlayer
+  - propulsionVisibility
+  - ShootBomb
+  - ShootTriBomb
+  - UpdatePosition
+  - ShootMine
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

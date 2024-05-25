@@ -1360,6 +1360,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 1134129239631916, guid: 7e48ba6b1b968764490bbc70b66e3fe1, type: 3}
   missile: {fileID: 1521080324876089087, guid: 5b3811c7f42b3d24295b5d64566969d1, type: 3}
   bulletMissile: {fileID: 1521080324876089087, guid: 5b3811c7f42b3d24295b5d64566969d1, type: 3}
+  bground: {fileID: 0}
 --- !u!50 &6200884937972078502
 Rigidbody2D:
   serializedVersion: 4

@@ -19,6 +19,7 @@ public class MainController : MonoBehaviourPunCallbacks
     [SerializeField] private int maxPlayers = 20;
     [SerializeField] private GameObject ccamera;
     [SerializeField] private GameObject leftButton, Rightbutton;
+    [SerializeField] private GameObject joinRoomCanvas, rocketSkin;
     public SpriteRenderer spriteRenderer;
     public Sprite[] sprites; // Array of different sprites
     private int currentIndex = 4; // Current index of the sprite
@@ -33,6 +34,7 @@ public class MainController : MonoBehaviourPunCallbacks
     private void Start()
     {
         UsernameMenu.SetActive(true);
+        FindObjectOfType<AudioMnagaer>().Play("start");
         startPosition = ccamera.transform.position;
         if (sprites.Length > 0)
         {
@@ -52,29 +54,11 @@ public class MainController : MonoBehaviourPunCallbacks
         tiltInput.x = Input.acceleration.x;
         tiltInput.y = Input.acceleration.y;
     }
-    private void LateUpdate()
-    {
-        // Calculate the movement vector based on tilt input
-        Vector3 movement = new Vector3(tiltInput.x * tiltSpeed, tiltInput.y * tiltSpeed, 0f);
-
-        // Calculate the target position after applying movement
-        Vector3 targetPosition = new Vector3(startPosition.x + movement.x, startPosition.y + movement.y, startPosition.z);
-
-        // Clamp the target position within the limits of the screen
-        float clampedX = Mathf.Clamp(targetPosition.x, startPosition.x - maxHorizontalOffset, startPosition.x + maxHorizontalOffset);
-        float clampedY = Mathf.Clamp(targetPosition.y, startPosition.y - maxVerticalOffset, startPosition.y + maxVerticalOffset);
-
-        // Set the clamped target position
-        targetPosition = new Vector2(clampedX, clampedY);
-
-        // Move the camera towards the target position
-        ccamera.transform.position = Vector3.Lerp(startPosition, targetPosition, Time.deltaTime);
-    }
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("OnConnectedToMaster() was called by PUN.");
-        PhotonNetwork.JoinRandomRoom();
+        //PhotonNetwork.JoinRandomRoom();
     }
     public void changeUserNameInput()
     {
@@ -91,10 +75,13 @@ public class MainController : MonoBehaviourPunCallbacks
     {
         UsernameMenu.SetActive(false);
         PhotonNetwork.NickName = UsernameInput.text;
+        ConnectPanel.SetActive(true);
+        rocketSkin.SetActive(true);
     }
     public void OnclickPlay()
     {
-        JoinRoom();    }
+        PhotonNetwork.JoinRandomRoom();
+    }
     public void CreateRoom()
     {
         RoomOptions roomOptions = new RoomOptions();
@@ -131,7 +118,7 @@ public class MainController : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
         // will change this function to only joinroom in
-        PhotonNetwork.JoinOrCreateRoom(Random.Range(1f, 2f).ToString(), roomOptions, TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom(JoinInput.text, roomOptions, TypedLobby.Default);
     }
     public void changeSkin()
     {
@@ -151,5 +138,11 @@ public class MainController : MonoBehaviourPunCallbacks
         currentIndex = (currentIndex + 1) % sprites.Length;
         spriteRenderer.sprite = sprites[currentIndex];
         Debug.Log(currentIndex);
+    }
+    public void onClickjoinRoom()
+    {
+        ConnectPanel.SetActive(false);
+        rocketSkin.SetActive(false);
+        joinRoomCanvas.SetActive(true);
     }
 }
