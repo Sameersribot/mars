@@ -9,6 +9,8 @@ public class multiplayerSpawner : MonoBehaviour
     public GameObject[] powers;
     public GameObject[] missiles;
     public GameObject petrolPrefab;  // Reference to the petrol prefab
+    public GameObject bot;
+
     public Vector2 spawnPoint;    // Point where petrol objects should be spawned
     public float spawnInterval = 15f;  // Time interval between petrol spawns
     public float spawnPowerInterval = 15f;  // Time interval between petrol spawns
@@ -18,6 +20,7 @@ public class multiplayerSpawner : MonoBehaviour
     private void Awake()
     {
         SpawnPlayer();
+        lobbyNumbers();
     }
     private void Start()
     {
@@ -97,5 +100,16 @@ public class multiplayerSpawner : MonoBehaviour
                 Debug.Log("Integer Value not found");
             }
         }
+    }
+    private void lobbyNumbers()
+    {
+        int num = PhotonNetwork.CurrentRoom.PlayerCount;
+        //if(num <= 1)
+        //{
+            for (int k = 0; k < 20 - num; k++)
+            {
+                PhotonNetwork.Instantiate(bot.name, new Vector2(31f + Random.Range(-5f, 5f), 421f + Random.Range(-20f, 20f)), Quaternion.identity);
+            }
+        //}
     }
 }

@@ -14,6 +14,9 @@ TagManager:
   - wall
   - teleporter
   - pumpwall
+  - bot
+  - blackhole
+  - actualhole
   layers:
   - Default
   - TransparentFX

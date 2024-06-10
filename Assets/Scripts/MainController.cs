@@ -12,6 +12,7 @@ public class MainController : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject ConnectPanel;
     [SerializeField] private InputField UsernameInput;
 
+
     [SerializeField] private InputField CreateInput;
     [SerializeField] private InputField JoinInput;
     [SerializeField] private GameObject StartButton;

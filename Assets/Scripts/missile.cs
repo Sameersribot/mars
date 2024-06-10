@@ -6,8 +6,15 @@ using Photon.Pun;
 public class missile : MonoBehaviour
 {
     public GameObject explosionPrefab, rocket;
-    private int playercollidedId, shooterId;
-    
+    public RocketController ownerId;
+
+    private void Update()
+    {
+        if(Vector2.Distance(ownerId.gameObject.transform.position, transform.position) > 20f)
+        {
+            Destroy(this.gameObject);
+        }
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "wall")
@@ -15,19 +22,9 @@ public class missile : MonoBehaviour
             Destroy(this.gameObject);
             Instantiate(explosionPrefab, this.transform.position, Quaternion.identity);
         }
-        /*else if (collision.gameObject.tag == "player")
+        else if(collision.gameObject.tag == "bot")
         {
-            PhotonView rocketPhotonView = rocket.GetPhotonView();
-            PhotonView enemyPhotonView = collision.gameObject.GetPhotonView();
-            if (rocketPhotonView != enemyPhotonView)
-            {
-                PhotonNetwork.Destroy(enemyPhotonView.gameObject);
-                Instantiate(explosionPrefab, this.transform.position, Quaternion.identity);
-                Destroy(this.gameObject);
-            }
-            
-            
-        }*/
-
+            ownerId.AddKill();
+        }
     }
 }
