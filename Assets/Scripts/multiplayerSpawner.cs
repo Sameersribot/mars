@@ -20,7 +20,7 @@ public class multiplayerSpawner : MonoBehaviour
     private void Awake()
     {
         SpawnPlayer();
-        lobbyNumbers();
+        botSpawner();
     }
     private void Start()
     {
@@ -53,12 +53,12 @@ public class multiplayerSpawner : MonoBehaviour
         Vector3 randomPosition = new Vector3(x, y, -2.2f);
 
         // Instantiate the object at the random position
-        Instantiate(petrolPrefab, randomPosition, Quaternion.identity);
+        PhotonNetwork.Instantiate(petrolPrefab.name, randomPosition, Quaternion.identity);
     }
     private void SpawnPower()
     {
-        float x = UnityEngine.Random.Range(-73f, -12f);
-        float y = UnityEngine.Random.Range(336f, 310f);
+        float x = Random.Range(-66f, 25.1f);
+        float y = Random.Range(326.5f, 515f);
         Vector3 randomPowerPosition = new Vector3(x, y, -2.2f);
         int typeOfPower = UnityEngine.Random.Range(0, powers.Length + 1);
 
@@ -69,7 +69,7 @@ public class multiplayerSpawner : MonoBehaviour
                 GameObject currentPower = powers[i];
 
                 // Do something with the current GameObject
-                Instantiate(currentPower, randomPowerPosition, Quaternion.identity);
+                PhotonNetwork.Instantiate(currentPower.name, randomPowerPosition, Quaternion.identity);
 
             }
             else
@@ -101,15 +101,15 @@ public class multiplayerSpawner : MonoBehaviour
             }
         }
     }
-    private void lobbyNumbers()
+    private void botSpawner()
     {
         int num = PhotonNetwork.CurrentRoom.PlayerCount;
-        //if(num <= 1)
-        //{
+        if(!(num > 1))
+        {
             for (int k = 0; k < 20 - num; k++)
             {
                 PhotonNetwork.Instantiate(bot.name, new Vector2(31f + Random.Range(-5f, 5f), 421f + Random.Range(-20f, 20f)), Quaternion.identity);
             }
-        //}
+        }
     }
 }

@@ -63,14 +63,7 @@ public class MainController : MonoBehaviourPunCallbacks
     }
     public void changeUserNameInput()
     {
-        if(UsernameInput.text.Length >= 3)
-        {
-            StartButton.SetActive(true);
-        }
-        else
-        {
-            StartButton.SetActive(false);
-        }
+        StartButton.SetActive(true);
     }
     public void SetUsername()
     {

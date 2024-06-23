@@ -114,7 +114,7 @@ MonoBehaviour:
   photonView: {fileID: 8933191052019432485}
   missilePrefab: {fileID: 1521080324876089087, guid: dc73374eda98cfd42aa23496901bed5d, type: 3}
   particleSystem: {fileID: 71368353298557363}
-  explosionPrefab: {fileID: 1134129239631916, guid: 7e48ba6b1b968764490bbc70b66e3fe1, type: 3}
+  explosionPrefab: {fileID: 725748389856807714, guid: 4bda94453d2ca7444a0fff05b2d425f5, type: 3}
 --- !u!50 &3622532628208671447
 Rigidbody2D:
   serializedVersion: 4

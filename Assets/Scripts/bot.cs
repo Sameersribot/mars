@@ -98,7 +98,7 @@ public class bot : MonoBehaviour
         if(collision.gameObject.tag == "missile")
         {
             Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
-            Destroy(collision.gameObject); 
+            Destroy(collision.gameObject);
             Destroy(gameObject);
         }
     }

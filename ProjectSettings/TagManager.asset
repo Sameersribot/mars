@@ -17,6 +17,8 @@ TagManager:
   - bot
   - blackhole
   - actualhole
+  - greenPower
+  - yellowPower
   layers:
   - Default
   - TransparentFX

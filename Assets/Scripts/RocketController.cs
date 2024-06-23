@@ -18,7 +18,7 @@ public class RocketController : MonoBehaviour
     private Rigidbody2D rb;
     public Vector2 currentDirection, movement;    // Current movement direction of the rocket
     public Vector3 otherPlayerPosition, playerSpwanPosition;
-    private ParticleSystem propulsion;
+    public ParticleSystem propulsion, electricPwr;
     public GameObject playerCamera, cvCam, otherPlayerCollision;
     public GameObject playerCanvas, audiosrc;
     public GameObject background;
@@ -35,14 +35,14 @@ public class RocketController : MonoBehaviour
     public GameObject explosionPrefab, missile, bulletMissile, bground; //restartButton
     public float parallaxFactor = 0.05f; // How much slower the background moves compared to the player
     public GameObject[] missiles;
-    public GameObject fastMovingParticles, arrowTrget;
+    public GameObject fastMovingParticles, arrowTrget, redRocketPowerEffect;
     private GameObject blackholeTarget,blackholeParent;
     private Vector3 initialPosition;
     private Vector3 initialPlayerPosition;
     private int kills;
     private int weapon =1;
-    private float nextFireTime;
-    private bool isInblackhole;
+    private float nextFireTime, proplsnValue;
+    private bool isInblackhole, electricPwrOn, sparksPwrOn;
     private int[] killsData;
     public float frictionForce = 0.5f; // Adjust this value to change the strength of the friction
 
@@ -53,6 +53,7 @@ public class RocketController : MonoBehaviour
         PhotonNetwork.SendRate = 40; //Default is 30
         PhotonNetwork.SerializationRate = 20;
         fuelpower = 60f;
+        
         if (photonView.IsMine)
         {
             playerCanvas.SetActive(true);
@@ -60,15 +61,18 @@ public class RocketController : MonoBehaviour
             cvCam.SetActive(true);
             bground.SetActive(true);
             audiosrc.SetActive(true);
-            text.text = PhotonNetwork.NickName;
+            
             //restartButton.SetActive(false);
-        }  
+        }
     }
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         propulsion = GetComponent<ParticleSystem>();
+        propulsion.Play(true);
+        naming();
         currentFuel = fuelCapacity;
+        
         playerSpwanPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         blackholeTarget = GameObject.FindGameObjectWithTag("actualhole");
         blackholeParent = GameObject.FindGameObjectWithTag("blackhole");
@@ -88,6 +92,7 @@ public class RocketController : MonoBehaviour
         leaderBoard();
         refresh();
         blackholePhysics();
+        photonView.RPC("propulsionVisibility", RpcTarget.All, new Vector2(joystick.Horizontal, joystick.Vertical).magnitude);
     }
     void FixedUpdate()
     {
@@ -102,6 +107,7 @@ public class RocketController : MonoBehaviour
 
     private void rocketMovement()
     {
+
         if (photonView.IsMine)
 
         {
@@ -111,7 +117,6 @@ public class RocketController : MonoBehaviour
             if (movement.magnitude > 0.1f )// && currentFuel >= 0f
             {
                 //rb.velocity = movement*1.5f;
-                photonView.RPC("propulsionVisibility", RpcTarget.AllViaServer);
                 float cosTheta = Vector3.Dot(rb.velocity.normalized, currentDirection)/ (rb.velocity.normalized.magnitude * currentDirection.magnitude);
                 
                 if (cosTheta <= 0.5f && rb.velocity.magnitude < 16.2f)
@@ -155,18 +160,29 @@ public class RocketController : MonoBehaviour
 
 
     [PunRPC]
-    private void propulsionVisibility()
+    private void propulsionVisibility(float lengthPropulsion)
     {
-        if (movement.magnitude > 0.1f)
-         {
-            propulsion.Play(true);
-            propulsion.startLifetime = movement.magnitude * 0.182f;
+        if (photonView.IsMine)
+        {
+            var mainModule = propulsion.main;
+            mainModule.startLifetime = lengthPropulsion;
         }
         else
         {
-            propulsion.Stop();
+            var mainModule = propulsion.main;
+            mainModule.startLifetime = lengthPropulsion;
         }
     }
+
+    private void naming()
+    {
+        if (photonView.IsMine)
+        {
+            text.text = PhotonNetwork.NickName;
+        }
+        else text.text = photonView.Owner.NickName;
+    }
+
     void zoon()
     {
         // Adjust the virtual camera's field of view
@@ -177,7 +193,7 @@ public class RocketController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
 
-        if(collision.gameObject.tag == "missile")
+        if(collision.gameObject.tag == "missile" && !electricPwrOn)
         {
             Destroy(collision.gameObject);
             if (photonView.IsMine)
@@ -187,7 +203,7 @@ public class RocketController : MonoBehaviour
             if (lifeSlider.value <= 0.01f)
             {
                 FindObjectOfType<AudioMnagaer>().Play("explosion");
-                photonView.RPC("collisionWithRocket", RpcTarget.AllViaServer, new Vector3(transform.position.x + rb.velocity.magnitude, transform.position.y + rb.velocity.magnitude, transform.position.z + rb.velocity.magnitude), Quaternion.identity);
+                photonView.RPC("collisionWithRocket", RpcTarget.AllViaServer);
             }
 
             //restartButton.SetActive(true);
@@ -232,14 +248,29 @@ public class RocketController : MonoBehaviour
         }
         else if(collision.gameObject.tag == "redPower")
         {
+            redRocketPowerEffect.SetActive(true);
+            redRocketPowerEffect.GetComponent<ParticleSystem>().Play(true);
+            sparksPwrOn = true;
+            Invoke("sparksPwrOff", 10f);
             Destroy(collision.gameObject);
         }
         else if(collision.gameObject.tag == "bluePower")
         {
+            electricPwr.gameObject.SetActive(true);
+            electricPwr.Play(true);
+            electricPwrOn = true;
+            Invoke("electricPowerOff", 10f);
             Destroy(collision.gameObject);
         }
         else if(collision.gameObject.tag == "blackhole"){
             isInblackhole = true;
+        }
+        else if(collision.gameObject.tag == "Player")
+        {
+            if (sparksPwrOn)
+            {
+                Destroy(collision.gameObject);
+            }
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -340,10 +371,10 @@ public class RocketController : MonoBehaviour
     }
 
     [PunRPC]
-    private void collisionWithRocket(Vector3 position, Quaternion rotation)
+    private void collisionWithRocket()
     {
-        GameObject bullet = Instantiate(explosionPrefab, position, rotation);
-        this.gameObject.SetActive(false);
+        GameObject bullet = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        if(photonView.IsMine)gameObject.SetActive(false);
         Invoke("Respawn", 6f);
     }
     
@@ -351,7 +382,7 @@ public class RocketController : MonoBehaviour
     {
         // Set the position and enable the GameObject
         transform.position = playerSpwanPosition;
-        this.gameObject.SetActive(true);
+        if (!gameObject.activeSelf) gameObject.SetActive(true);
     }
     
     public void AddKill()
@@ -396,7 +427,6 @@ public class RocketController : MonoBehaviour
                 case 2:
                     onClickFireBomb();
                     break;
-
             }
         }
     }
@@ -429,6 +459,7 @@ public class RocketController : MonoBehaviour
     public void refresh()
     {
         int i = 0;
+        leaderBordText.text = "";
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             if (player.CustomProperties.TryGetValue("kills", out object killsObj))
@@ -436,8 +467,7 @@ public class RocketController : MonoBehaviour
                 if (killsObj != null)
                 {
                     int kills = (int)killsObj;
-                    leaderBordText.text = player.NickName + "-  " + kills + "\n";
-                    Debug.Log(kills);
+                    leaderBordText.text = leaderBordText.text + player.NickName + "-  " + kills + "\n";
                 }
             }
         }
@@ -449,6 +479,18 @@ public class RocketController : MonoBehaviour
         {
             rb.AddForce((blackholeTarget.transform.position - transform.position) * 2f);
         }
+    }
+    private void electricPowerOff()
+    {
+        electricPwrOn = false;
+        electricPwr.Stop();
+        electricPwr.gameObject.SetActive(false);
+    }
+    private void sparksPwrOff()
+    {
+        sparksPwrOn = false;
+        redRocketPowerEffect.GetComponent<ParticleSystem>().Stop();
+        redRocketPowerEffect.SetActive(false);
     }
 }
 
