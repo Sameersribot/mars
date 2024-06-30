@@ -7,7 +7,6 @@ public class backgroundGradient : MonoBehaviour
 {
     private void Start()
     {
-        gameObject.SetActive(true);
     }
     private void Update()
     {

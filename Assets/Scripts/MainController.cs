@@ -23,6 +23,8 @@ public class MainController : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject joinRoomCanvas, rocketSkin;
     public SpriteRenderer spriteRenderer;
     public Sprite[] sprites; // Array of different sprites
+    public Sprite btnwhite;
+    public Button btnUsername;
     private int currentIndex = 4; // Current index of the sprite
     public float shiftAmount = 0.2f;      // Amount of camera shift based on tilt controls
 
@@ -67,10 +69,12 @@ public class MainController : MonoBehaviourPunCallbacks
     }
     public void SetUsername()
     {
+        btnUsername.GetComponent<Image>().sprite = btnwhite;
         UsernameMenu.SetActive(false);
         PhotonNetwork.NickName = UsernameInput.text;
         ConnectPanel.SetActive(true);
         rocketSkin.SetActive(true);
+
     }
     public void OnclickPlay()
     {
@@ -138,5 +142,10 @@ public class MainController : MonoBehaviourPunCallbacks
         ConnectPanel.SetActive(false);
         rocketSkin.SetActive(false);
         joinRoomCanvas.SetActive(true);
+    }
+
+    public static implicit operator MainController(ParticleSystem v)
+    {
+        throw new System.NotImplementedException();
     }
 }

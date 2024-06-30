@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
 using DG.Tweening;
-using UnityEngine.Audio;
-using System;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
 
@@ -40,7 +38,7 @@ public class RocketController : MonoBehaviour
     private Vector3 initialPosition;
     private Vector3 initialPlayerPosition;
     private int kills;
-    private int weapon =1;
+    private int weapon =0;
     private float nextFireTime, proplsnValue;
     private bool isInblackhole, electricPwrOn, sparksPwrOn;
     private int[] killsData;
@@ -61,18 +59,17 @@ public class RocketController : MonoBehaviour
             cvCam.SetActive(true);
             bground.SetActive(true);
             audiosrc.SetActive(true);
-            
+            propulsion = GetComponent<ParticleSystem>();
             //restartButton.SetActive(false);
         }
     }
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        propulsion = GetComponent<ParticleSystem>();
-        propulsion.Play(true);
+
         naming();
         currentFuel = fuelCapacity;
-        
+        missiles[3].SetActive(false);
         playerSpwanPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         blackholeTarget = GameObject.FindGameObjectWithTag("actualhole");
         blackholeParent = GameObject.FindGameObjectWithTag("blackhole");
@@ -92,7 +89,7 @@ public class RocketController : MonoBehaviour
         leaderBoard();
         refresh();
         blackholePhysics();
-        photonView.RPC("propulsionVisibility", RpcTarget.All, new Vector2(joystick.Horizontal, joystick.Vertical).magnitude);
+        photonView.RPC("propulsionVisibility", RpcTarget.All);
     }
     void FixedUpdate()
     {
@@ -160,18 +157,10 @@ public class RocketController : MonoBehaviour
 
 
     [PunRPC]
-    private void propulsionVisibility(float lengthPropulsion)
+    private void propulsionVisibility()
     {
-        if (photonView.IsMine)
-        {
-            var mainModule = propulsion.main;
-            mainModule.startLifetime = lengthPropulsion;
-        }
-        else
-        {
-            var mainModule = propulsion.main;
-            mainModule.startLifetime = lengthPropulsion;
-        }
+        proplsnValue = new Vector2(joystick.Horizontal, joystick.Vertical).magnitude;
+        
     }
 
     private void naming()
@@ -195,7 +184,7 @@ public class RocketController : MonoBehaviour
 
         if(collision.gameObject.tag == "missile" && !electricPwrOn)
         {
-            Destroy(collision.gameObject);
+            if(weapon != 3) Destroy(collision.gameObject);
             if (photonView.IsMine)
             {
                 lifeSlider.value -= 0.2f;
@@ -217,14 +206,12 @@ public class RocketController : MonoBehaviour
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(transform.position);
             stream.SendNext(rb.rotation);
             stream.SendNext(rb.velocity);
             stream.SendNext(rb.angularVelocity);
         }
         else
         { 
-            transform.position = (Vector2)stream.ReceiveNext();
             transform.rotation = (Quaternion)stream.ReceiveNext();
             rb.velocity = (Vector3)stream.ReceiveNext();
             rb.angularVelocity = (float)stream.ReceiveNext();
@@ -265,13 +252,6 @@ public class RocketController : MonoBehaviour
         else if(collision.gameObject.tag == "blackhole"){
             isInblackhole = true;
         }
-        else if(collision.gameObject.tag == "Player")
-        {
-            if (sparksPwrOn)
-            {
-                Destroy(collision.gameObject);
-            }
-        }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -284,13 +264,10 @@ public class RocketController : MonoBehaviour
             isInblackhole = false;
         }
     }
-
-
     private void StartRefueling()
     {
         InvokeRepeating("IncreaseFuel", 0f, 0.1f);
     }
-
     private void StopRefueling()
     {
         CancelInvoke("IncreaseFuel");
@@ -382,7 +359,7 @@ public class RocketController : MonoBehaviour
     {
         // Set the position and enable the GameObject
         transform.position = playerSpwanPosition;
-        if (!gameObject.activeSelf) gameObject.SetActive(true);
+        gameObject.SetActive(true);
     }
     
     public void AddKill()
@@ -394,11 +371,11 @@ public class RocketController : MonoBehaviour
     public void shootJoystick()
     {
         Vector2 dirToShoot = new Vector2(weaponJoystick.Horizontal, weaponJoystick.Vertical) * 10f;
+        float angle = Mathf.Atan2(dirToShoot.y, dirToShoot.x) * Mathf.Rad2Deg; 
         if (dirToShoot.magnitude > 0f)
         {
             arrowTrget.SetActive(true);
-            float angle = Mathf.Atan2(dirToShoot.y, dirToShoot.x) * Mathf.Rad2Deg;
-
+            
             Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle + 90f);
             arrowTrget.transform.rotation = Quaternion.Slerp(arrowTrget.transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
@@ -409,7 +386,7 @@ public class RocketController : MonoBehaviour
         if (dirToShoot.magnitude >= 10f && Time.time >= nextFireTime)
         {
             nextFireTime = Time.time + 0.1f;
-            int x = weapon % 3;
+            int x = weapon % 4;
             Vector3 missilePosition = new Vector3(this.transform.position.x + rb.velocity.x * missileAdjustment, this.transform.position.y + rb.velocity.y * missileAdjustment, this.transform.position.z);
             if (photonView.IsMine)
                 FindObjectOfType<AudioMnagaer>().Play("shooting");
@@ -427,6 +404,11 @@ public class RocketController : MonoBehaviour
                 case 2:
                     onClickFireBomb();
                     break;
+                case 3:
+                    missiles[3].SetActive(true);
+                    Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle-90f);
+                    missiles[3].transform.rotation = Quaternion.Slerp(missiles[3].transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+                    break; 
             }
         }
     }

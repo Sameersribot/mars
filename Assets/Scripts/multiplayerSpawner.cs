@@ -16,7 +16,6 @@ public class multiplayerSpawner : MonoBehaviour
     public float spawnPowerInterval = 15f;  // Time interval between petrol spawns
     public float spawnMissilesInterval = 8f;
 
-
     private void Awake()
     {
         SpawnPlayer();
@@ -53,8 +52,9 @@ public class multiplayerSpawner : MonoBehaviour
         Vector3 randomPosition = new Vector3(x, y, -2.2f);
 
         // Instantiate the object at the random position
-        PhotonNetwork.Instantiate(petrolPrefab.name, randomPosition, Quaternion.identity);
+        Instantiate(petrolPrefab, randomPosition, Quaternion.identity);
     }
+
     private void SpawnPower()
     {
         float x = Random.Range(-66f, 25.1f);
@@ -69,7 +69,7 @@ public class multiplayerSpawner : MonoBehaviour
                 GameObject currentPower = powers[i];
 
                 // Do something with the current GameObject
-                PhotonNetwork.Instantiate(currentPower.name, randomPowerPosition, Quaternion.identity);
+                Instantiate(currentPower, randomPowerPosition, Quaternion.identity);
 
             }
             else
