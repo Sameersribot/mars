@@ -5,7 +5,7 @@ using Photon.Pun;
 
 public class missile : MonoBehaviour
 {
-    public GameObject explosionPrefab, rocket;
+    public GameObject explosionPrefab;
     public RocketController ownerId;
 
     private void Update()
@@ -22,8 +22,15 @@ public class missile : MonoBehaviour
             Destroy(this.gameObject);
             Instantiate(explosionPrefab, this.transform.position, Quaternion.identity);
         }
-        else if(collision.gameObject.tag == "bot")
+        if(collision.gameObject.tag == "bot"&& gameObject.tag != "hammer")
         {
+            ownerId.AddKill();
+        }
+        else if(collision.gameObject.tag == "bot" && gameObject.tag == "hammer")
+        {
+            Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
+            Debug.Log("hit me ");
+            Destroy(collision.gameObject);
             ownerId.AddKill();
         }
     }

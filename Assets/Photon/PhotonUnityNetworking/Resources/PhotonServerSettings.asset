@@ -51,6 +51,9 @@ MonoBehaviour:
   - AddKill
   - collided
   - namingOfPlayers
+  - ShootDualMissile
+  - changeRocketSkin
+  - collidingMissile
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

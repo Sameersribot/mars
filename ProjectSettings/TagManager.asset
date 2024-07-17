@@ -19,6 +19,7 @@ TagManager:
   - actualhole
   - greenPower
   - yellowPower
+  - hammer
   layers:
   - Default
   - TransparentFX

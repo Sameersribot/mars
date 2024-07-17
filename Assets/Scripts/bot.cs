@@ -13,7 +13,7 @@ public class bot : MonoBehaviour
     public PhotonView photonView;
     public GameObject missilePrefab;
     public ParticleSystem particleSystem;
-    private Vector2 direction, distance, directionRandom;
+    private Vector2 direction, distance, directionRandom, initialPos;
     private SpriteRenderer renderer;
     private Transform player;
     private float nextFireTime, nextRandTime;
@@ -23,24 +23,9 @@ public class bot : MonoBehaviour
 
     void Start()
     {
-        renderer = gameObject.GetComponent<SpriteRenderer>();
-        float spriteChoose = Random.Range(1f, 5f);
-        if(spriteChoose > 1f && spriteChoose < 2f)
-        {
-            renderer.sprite = sprites[0];
-        }
-        else if (spriteChoose > 2f && spriteChoose < 3f)
-        {
-            renderer.sprite = sprites[1];
-        }
-        else if (spriteChoose > 3f && spriteChoose < 4f)
-        {
-            renderer.sprite = sprites[2];
-        }
-        else if (spriteChoose > 4f && spriteChoose < 5f)
-        {
-            renderer.sprite = sprites[3];
-        }
+        initialPos = gameObject.transform.position;
+        photonView.RPC("changeRocketSkin", RpcTarget.AllViaServer);
+
         botRb = gameObject.GetComponent<Rigidbody2D>();
     }
 
@@ -97,9 +82,13 @@ public class bot : MonoBehaviour
     {
         if(collision.gameObject.tag == "missile")
         {
+            FindObjectOfType<AudioMnagaer>().Play("explosion");
             Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
             Destroy(collision.gameObject);
-            Destroy(gameObject);
+            
+            gameObject.transform.position = initialPos;
+            gameObject.SetActive(false);
+            Invoke("respawnBot", 12f);
         }
     }
     [PunRPC]
@@ -122,6 +111,10 @@ public class bot : MonoBehaviour
         //photonView.RPC("ShootTriBomb", RpcTarget.AllViaServer, missilePosition, this.transform.rotation, missileDirection);
         photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, this.transform.rotation, missileDirection, randomForce);
     }
+    void respawnBot()
+    {
+        gameObject.SetActive(true);
+    }
     void propulsion()
     {
         if(botRb.velocity.magnitude > 0.1f)
@@ -132,6 +125,28 @@ public class bot : MonoBehaviour
         else
         {
             particleSystem.Stop();
+        }
+    }
+    [PunRPC]
+    void changeRocketSkin()
+    {
+        renderer = gameObject.GetComponent<SpriteRenderer>();
+        float spriteChoose = Random.Range(1f, 5f);
+        if (spriteChoose > 1f && spriteChoose < 2f)
+        {
+            renderer.sprite = sprites[0];
+        }
+        else if (spriteChoose > 2f && spriteChoose < 3f)
+        {
+            renderer.sprite = sprites[1];
+        }
+        else if (spriteChoose > 3f && spriteChoose < 4f)
+        {
+            renderer.sprite = sprites[2];
+        }
+        else if (spriteChoose > 4f && spriteChoose < 5f)
+        {
+            renderer.sprite = sprites[3];
         }
     }
 }
