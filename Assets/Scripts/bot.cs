@@ -18,7 +18,7 @@ public class bot : MonoBehaviour
     private Transform player;
     private float nextFireTime, nextRandTime;
     private Rigidbody2D botRb;
-    public GameObject explosionPrefab;
+    public GameObject explosionPrefab, playerObj;
 
 
     void Start()
@@ -27,11 +27,12 @@ public class bot : MonoBehaviour
         photonView.RPC("changeRocketSkin", RpcTarget.AllViaServer);
 
         botRb = gameObject.GetComponent<Rigidbody2D>();
+        InvokeRepeating("setPlayer", 1f, 20f);
     }
 
     void Update()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        
         // Move towards the player
         distance = new Vector2(gameObject.transform.position.x - playerObj.transform.position.x, gameObject.transform.position.y - playerObj.transform.position.y);
         propulsion();
@@ -148,5 +149,9 @@ public class bot : MonoBehaviour
         {
             renderer.sprite = sprites[3];
         }
+    }
+    private void setPlayer()
+    {
+        playerObj = GameObject.FindGameObjectWithTag("Player");
     }
 }

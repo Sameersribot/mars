@@ -71,7 +71,7 @@ public class multiplayerSpawner : MonoBehaviour
                 GameObject currentPower = powers[i];
 
                 // Do something with the current GameObject
-                Instantiate(currentPower, randomPowerPosition, Quaternion.identity);
+                PhotonNetwork.Instantiate(currentPower.name, randomPowerPosition, Quaternion.identity);
 
             }
             else

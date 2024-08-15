@@ -15,7 +15,7 @@ public class MainController : MonoBehaviourPunCallbacks
 
     [SerializeField] private InputField CreateInput;
     [SerializeField] private InputField JoinInput;
-    [SerializeField] private GameObject StartButton;
+    [SerializeField] private GameObject StartButton, loadingPanel;
 
     [SerializeField] private int maxPlayers = 20;
     [SerializeField] private GameObject ccamera;
@@ -70,6 +70,8 @@ public class MainController : MonoBehaviourPunCallbacks
     public void SetUsername()
     {
         btnUsername.GetComponent<Image>().sprite = btnwhite;
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+
         UsernameMenu.SetActive(false);
         PhotonNetwork.NickName = UsernameInput.text;
         ConnectPanel.SetActive(true);
@@ -79,6 +81,9 @@ public class MainController : MonoBehaviourPunCallbacks
     public void OnclickPlay()
     {
         PhotonNetwork.JoinRandomRoom();
+        FindObjectOfType<AudioMnagaer>().Play("start");
+        ConnectPanel.SetActive(false);
+        loadingPanel.SetActive(true);
     }
     public void CreateRoom()
     {
@@ -117,6 +122,8 @@ public class MainController : MonoBehaviourPunCallbacks
         roomOptions.MaxPlayers = maxPlayers;
         // will change this function to only joinroom in
         PhotonNetwork.JoinOrCreateRoom(JoinInput.text, roomOptions, TypedLobby.Default);
+        loadingPanel.SetActive(true);
+        joinRoomCanvas.SetActive(false);
     }
     public void changeSkin()
     {
@@ -127,6 +134,8 @@ public class MainController : MonoBehaviourPunCallbacks
     {
         // Decrease the current index and wrap around
         currentIndex = (currentIndex - 1 + sprites.Length) % sprites.Length;
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+
         spriteRenderer.sprite = sprites[currentIndex];
         Debug.Log(currentIndex);
     }
@@ -135,10 +144,14 @@ public class MainController : MonoBehaviourPunCallbacks
         // Increase the current index and wrap around
         currentIndex = (currentIndex + 1) % sprites.Length;
         spriteRenderer.sprite = sprites[currentIndex];
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+
         Debug.Log(currentIndex);
     }
     public void onClickjoinRoom()
     {
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+
         ConnectPanel.SetActive(false);
         rocketSkin.SetActive(false);
         joinRoomCanvas.SetActive(true);
