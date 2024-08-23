@@ -21,6 +21,10 @@ TagManager:
   - yellowPower
   - hammer
   - pointerMissile
+  - hammerGain
+  - bulletGain
+  - bombGain
+  - redmissileGain
   layers:
   - Default
   - TransparentFX

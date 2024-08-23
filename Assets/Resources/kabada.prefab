@@ -962,6 +962,7 @@ GameObject:
   - component: {fileID: 9142202187387738255}
   - component: {fileID: 2649283167597230099}
   - component: {fileID: 2401008048227558236}
+  - component: {fileID: 7149562879332598087}
   m_Layer: 5
   m_Name: Floating Joystick (1)
   m_TagString: Untagged
@@ -1047,6 +1048,33 @@ MonoBehaviour:
   snapY: 0
   background: {fileID: 3512540892293539804}
   handle: {fileID: 3905022333960394612}
+--- !u!114 &7149562879332598087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2231320922018961678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8544c805d5f853943b5432536e742350, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onJoystickClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6200884937972078501}
+        m_TargetAssemblyTypeName: RocketController, Assembly-CSharp
+        m_MethodName: OnJoystickClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2537841328605547846
 GameObject:
   m_ObjectHideFlags: 0
@@ -2261,6 +2289,7 @@ RectTransform:
   - {fileID: 6080328883126605483}
   - {fileID: 3995596925528456153}
   - {fileID: 8718404382469620488}
+  - {fileID: 525794888021232548}
   m_Father: {fileID: 6770532396623896274}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2349,7 +2378,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6200884937889032279
 Transform:
   m_ObjectHideFlags: 0
@@ -2685,6 +2714,15 @@ MonoBehaviour:
   - {fileID: 6069130414469549178}
   colorsForNicknames:
   - {r: 0.4433962, g: 0.28193307, b: 0.28193307, a: 1}
+  weaponIcons:
+  - {fileID: 21300000, guid: dada8a026911a614b9f5fc19699a1152, type: 3}
+  - {fileID: 21300000, guid: d961b2189caf55744ba9b60cfb8ea208, type: 3}
+  - {fileID: 21300000, guid: 58320703819c63449b12ece4c546163e, type: 3}
+  - {fileID: 21300000, guid: 3dcbc5dd42688554f87245f2dc06e19a, type: 3}
+  - {fileID: 21300000, guid: d101a8c3eba4bc743b584d31db0d21b9, type: 3}
+  - {fileID: 21300000, guid: dada8a026911a614b9f5fc19699a1152, type: 3}
+  - {fileID: 21300000, guid: d101a8c3eba4bc743b584d31db0d21b9, type: 3}
+  weaponIconImage: {fileID: 6958251118560113415}
   frictionForce: 10
 --- !u!50 &6200884937972078502
 Rigidbody2D:
@@ -7674,7 +7712,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 331, y: -89}
+  m_AnchoredPosition: {x: -318, y: 92}
   m_SizeDelta: {x: 120, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1703156790984435099
@@ -8180,6 +8218,12 @@ MonoBehaviour:
     pitch: 1
     loop: 1
     source: {fileID: 0}
+  - name: weaponChange
+    clip: {fileID: 8300000, guid: 3b387aae71f75a747bbd799675d9b85a, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
 --- !u!1 &7722358714863603900
 GameObject:
   m_ObjectHideFlags: 0
@@ -8216,8 +8260,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 157, y: -41}
-  m_SizeDelta: {x: 160, y: 20}
+  m_AnchoredPosition: {x: 206, y: -13}
+  m_SizeDelta: {x: 100, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8840338997148753187
 MonoBehaviour:
@@ -8514,6 +8558,139 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &8634226511625657480
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 525794888021232548}
+  - component: {fileID: 6156608193229143538}
+  - component: {fileID: 198351495825338805}
+  - component: {fileID: 2387736821628705030}
+  m_Layer: 5
+  m_Name: btnfire
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &525794888021232548
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8634226511625657480}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6200884937695833322}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 254, y: -41}
+  m_SizeDelta: {x: 267.72, y: 151.9}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &6156608193229143538
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8634226511625657480}
+  m_CullTransparentMesh: 1
+--- !u!114 &198351495825338805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8634226511625657480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2387736821628705030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8634226511625657480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 198351495825338805}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6200884937972078501}
+        m_TargetAssemblyTypeName: RocketController, Assembly-CSharp
+        m_MethodName: onClickFireMissile
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8816997125238864275
 GameObject:
   m_ObjectHideFlags: 0

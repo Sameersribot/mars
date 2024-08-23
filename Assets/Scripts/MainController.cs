@@ -27,7 +27,7 @@ public class MainController : MonoBehaviourPunCallbacks
     public Button btnUsername;
     private int currentIndex = 4; // Current index of the sprite
     public float shiftAmount = 0.2f;      // Amount of camera shift based on tilt controls
-
+    public GameObject loadingBar;
     private Vector2 tiltInput;            // Store the tilt input values
     private Vector3 startPosition;
     public float tiltSpeed = 2f;          // Speed of camera movement based on tilt controls
@@ -93,7 +93,10 @@ public class MainController : MonoBehaviourPunCallbacks
     }
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        Debug.Log("Failed to join a random room. Creating a new room...");
+        ToastMessage toast = new ToastMessage();
+        toast.ShowToast("No Room Found");
+        ConnectPanel.SetActive(true);
+        loadingPanel.SetActive(false);
     }
     public override void OnJoinedRoom()
     {

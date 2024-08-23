@@ -26,7 +26,7 @@ public class multiplayerSpawner : MonoBehaviour
     {
         InvokeRepeating("SpawnPetrol", spawnInterval, spawnInterval);
         InvokeRepeating("SpawnPower", spawnPowerInterval, spawnPowerInterval);
-        //InvokeRepeating("SpawnWeapons", spawnInterval, spawnInterval);
+        InvokeRepeating("SpawnWeapons", 2f, spawnInterval);
     }
     private void SpawnPlayer()
     {
@@ -129,7 +129,7 @@ public class multiplayerSpawner : MonoBehaviour
                 GameObject currentweapon = weapons[i];
 
                 // Do something with the current GameObject
-                Instantiate(currentweapon, randomPowerPosition, Quaternion.identity);
+                PhotonNetwork.Instantiate(currentweapon.name, randomPowerPosition, Quaternion.identity);
 
             }
             else

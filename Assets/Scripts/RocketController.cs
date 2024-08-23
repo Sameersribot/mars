@@ -47,6 +47,8 @@ public class RocketController : MonoBehaviour
     public GameObject dulmissile, pointerMissile, lifeUi;
     public AudioSource[] voices;
     public Color[] colorsForNicknames;
+    public Sprite[] weaponIcons;
+    public Image weaponIconImage;
     public float frictionForce = 0.5f; // Adjust this value to change the strength of the friction
 
     // public AudioSource audio;
@@ -279,6 +281,25 @@ public class RocketController : MonoBehaviour
             lifeSlider.value = 1f;
             Destroy(collision.gameObject);
         }
+        else if(collision.gameObject.tag == "bulletGain")
+        {
+            Destroy(collision.gameObject);
+
+        }
+        else if(collision.gameObject.tag == "bombGain")
+        {
+            Destroy(collision.gameObject);
+
+        }
+        else if(collision.gameObject.tag == "redmissileGain")
+        {
+            Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.tag == "hammerGain")
+        {
+            Destroy(collision.gameObject);
+
+        }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -389,6 +410,8 @@ public class RocketController : MonoBehaviour
     public void onClickFireMissile()
     {
         weapon++;
+        if(photonView.IsMine) FindObjectOfType<AudioMnagaer>().Play("weaponChange");
+        weaponIconImage.sprite = weaponIcons[weapon%7];
         Debug.Log("clicked");
     }
     public void onClickFireBomb()
@@ -444,7 +467,7 @@ public class RocketController : MonoBehaviour
         {
             arrowTrget.SetActive(false);
         }
-        if (dirToShoot.magnitude >= 10f && Time.time >= nextFireTime)
+        if (dirToShoot.magnitude == 10f && Time.time >= nextFireTime)
         {
             int x = weapon % 7;
             Vector3 missilePosition = new Vector3(this.transform.position.x , this.transform.position.y + rb.velocity.y * missileAdjustment, this.transform.position.z);
@@ -488,6 +511,8 @@ public class RocketController : MonoBehaviour
                     break;
             }
         }
+
+        
     }
 
     void breakForce()
@@ -540,9 +565,6 @@ public class RocketController : MonoBehaviour
         }
     }
 
-
-
-
 private void blackholePhysics()
     {
         //blackholeParent.transform.DOMove(new Vector2(-2f, 511f), 100f, false);
@@ -562,6 +584,55 @@ private void blackholePhysics()
         sparksPwrOn = false;
         redRocketPowerEffect.GetComponent<ParticleSystem>().Stop();
         redRocketPowerEffect.SetActive(false);
+    }
+    public void OnJoystickClicked()
+    {
+        Vector2 dirToShoot = new Vector2(weaponJoystick.Horizontal, weaponJoystick.Vertical) * 10f;
+        float angle = Mathf.Atan2(dirToShoot.y, dirToShoot.x) * Mathf.Rad2Deg;
+        if (movement.magnitude > 0.01f && Time.time >= nextFireTime)
+        {
+            int x = weapon % 7;
+            Vector3 missilePosition = new Vector3(this.transform.position.x, this.transform.position.y + rb.velocity.y * missileAdjustment, this.transform.position.z);
+
+            Vector2 randomForce = currentDirection * missileSpeed * 50f;
+
+            //photonView.RPC("ShootTriBomb", RpcTarget.AllViaServer, missilePosition, this.transform.rotation, missileDirection);
+            switch (x)
+            {
+                case 0:
+                    photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, movement * 45f);
+                    nextFireTime = Time.time + 0.08f;
+                    break;
+                case 1:
+                    onClickFireMine();
+                    nextFireTime = Time.time + 0.8f;
+                    break;
+                case 2:
+                    onClickFireBomb();
+                    nextFireTime = Time.time + 0.5f;
+                    break;
+                case 3:
+                    if (photonView.IsMine)
+                    {
+                        missiles[3].SetActive(true);
+                        Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle - 90f);
+                        nextFireTime = Time.time + 0.1f;
+                        missiles[3].transform.rotation = Quaternion.Slerp(missiles[3].transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime * 3f);
+                    }
+                    break;
+                case 4:
+                    dulmissile.SetActive(true);
+                    photonView.RPC("ShootDualMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, movement * 100f);
+
+                    nextFireTime = Time.time + 1f;
+                    break;
+                case 5:
+                    pointerMissile.SetActive(true);
+                    photonView.RPC("ShootPointerMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, movement * 120f);
+                    nextFireTime = Time.time + 0.8f;
+                    break;
+            }
+        }
     }
 }
 
