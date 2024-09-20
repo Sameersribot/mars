@@ -25,6 +25,8 @@ TagManager:
   - bulletGain
   - bombGain
   - redmissileGain
+  - teleporter6
+  - teleporterx
   layers:
   - Default
   - TransparentFX

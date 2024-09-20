@@ -17,12 +17,12 @@ public class RocketController : MonoBehaviour
     private Rigidbody2D rb;
     public Vector2 currentDirection, movement;    // Current movement direction of the rocket
     public Vector3 otherPlayerPosition, playerSpwanPosition;
-    public ParticleSystem propulsion, electricPwr;
+    public ParticleSystem propulsion, electricPwr, bulletTrail;
     public GameObject playerCamera, cvCam, otherPlayerCollision;
     public GameObject playerCanvas, audiosrc;
     public GameObject background;
     public GameObject redDot, whiteDot;
-    public Text text, killsText, leaderBordText;
+    public Text text, killsText, leaderBordText, whokilldwho;//who killed whom text
     private int playerId;
     public CinemachineVirtualCamera virtualCamera;
     public float fuelCapacity = 100f;
@@ -49,6 +49,7 @@ public class RocketController : MonoBehaviour
     public Color[] colorsForNicknames;
     public Sprite[] weaponIcons;
     public Image weaponIconImage;
+    private bool[] whichWeapon;
     public float frictionForce = 0.5f; // Adjust this value to change the strength of the friction
 
     // public AudioSource audio;
@@ -203,6 +204,7 @@ public class RocketController : MonoBehaviour
             {
                 voices[0].Play();
                 photonView.RPC("collisionWithRocket", RpcTarget.AllViaServer);
+                whokilldwho.text = PhotonNetwork.NickName + "killed" + collision.gameObject.GetPhotonView().name;
             }
 
             //restartButton.SetActive(true);
@@ -253,8 +255,34 @@ public class RocketController : MonoBehaviour
         }
         else if (collision.gameObject.tag == "teleporter")
         {
-            transform.position = new Vector2(-7.1f, 442.3f);
+            int ft = (int)Random.Range(1f, 6f);
+            FindObjectOfType<AudioMnagaer>().Play("teleport");
+            Debug.Log(ft);
+            switch (ft)
+            {
+                case (1): 
+                    transform.position = new Vector2(63f, 653f);
+                    break;
+                case 2:
+                    transform.position = new Vector2(-183f, 360f);
+                    break;
+                case 3:
+                    transform.position = new Vector2(-40f, 324.2f);
+                    break;
+                case 4:
+                    transform.position = new Vector2(276f, 339.2f);
+                    break;
+                case 6:
+                    transform.position = new Vector2(63f, 653f);
+                    break;
+            }
         }
+        /*else if (collision.gameObject.tag == "teleporter6")
+        {
+            transform.position = new Vector2(63f, 653f);
+        }
+        else if (collision.gameObject.tag == "teleporterx")
+            transform.position = new Vector2(-183f, 360f);*/
         else if (collision.gameObject.tag == "redPower")
         {
             redRocketPowerEffect.SetActive(true);
@@ -270,35 +298,36 @@ public class RocketController : MonoBehaviour
             electricPwrOn = true;
             Invoke("electricPowerOff", 10f);
             Destroy(collision.gameObject);
-        }   
+        }
         else if (collision.gameObject.tag == "blackhole")
         {
             blackholeTarget = collision.gameObject;
             isInblackhole = true;
         }
-        else if(collision.gameObject.tag == "greenPower" && photonView.IsMine)
+        else if (collision.gameObject.tag == "greenPower" && photonView.IsMine)
         {
             lifeSlider.value = 1f;
             Destroy(collision.gameObject);
         }
-        else if(collision.gameObject.tag == "bulletGain")
+        else if (collision.gameObject.tag == "bulletGain")
         {
             Destroy(collision.gameObject);
-
+            //whichWeapon[0] = true;
         }
-        else if(collision.gameObject.tag == "bombGain")
+        else if (collision.gameObject.tag == "bombGain")
         {
             Destroy(collision.gameObject);
-
+            //whichWeapon[1] = true;
         }
-        else if(collision.gameObject.tag == "redmissileGain")
+        else if (collision.gameObject.tag == "redmissileGain")
         {
             Destroy(collision.gameObject);
+            //whichWeapon[2] = true;
         }
         else if (collision.gameObject.tag == "hammerGain")
         {
             Destroy(collision.gameObject);
-
+            //whichWeapon[3] = true;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -335,8 +364,9 @@ public class RocketController : MonoBehaviour
     {
         GameObject bullet = Instantiate(missiles[0], position, rotation);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
+        
         //bulletRigidbody.velocity = currentDirection * missileSpeed;
-        Quaternion targetRotation = Quaternion.Euler(0f, 0f, bullet.transform.rotation.z);
+        Quaternion targetRotation = Quaternion.Euler(0f, 0f, transform.rotation.z + 90f);
         bullet.transform.rotation = Quaternion.Slerp(bullet.transform.rotation, targetRotation, Time.deltaTime);
         if (photonView.IsMine) voices[1].Play();
         bulletRigidbody.AddForce(force);
@@ -480,6 +510,7 @@ public class RocketController : MonoBehaviour
                 case 0:
                     photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 30f);
                     nextFireTime = Time.time + 0.08f;
+                    
                     break;
                 case 1:
                     onClickFireMine();
@@ -600,8 +631,9 @@ private void blackholePhysics()
             switch (x)
             {
                 case 0:
-                    photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, movement * 45f);
-                    nextFireTime = Time.time + 0.08f;
+                    photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 30f);
+                    nextFireTime = Time.time + 0.12f;
+
                     break;
                 case 1:
                     onClickFireMine();
@@ -622,13 +654,13 @@ private void blackholePhysics()
                     break;
                 case 4:
                     dulmissile.SetActive(true);
-                    photonView.RPC("ShootDualMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, movement * 100f);
+                    photonView.RPC("ShootDualMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 100f);
 
                     nextFireTime = Time.time + 1f;
                     break;
                 case 5:
                     pointerMissile.SetActive(true);
-                    photonView.RPC("ShootPointerMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, movement * 120f);
+                    photonView.RPC("ShootPointerMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 120f);
                     nextFireTime = Time.time + 0.8f;
                     break;
             }

@@ -159,6 +159,14 @@ public class MainController : MonoBehaviourPunCallbacks
         rocketSkin.SetActive(false);
         joinRoomCanvas.SetActive(true);
     }
+    public void onClickBack()
+    {
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+
+        ConnectPanel.SetActive(true);
+        rocketSkin.SetActive(true);
+        joinRoomCanvas.SetActive(false);
+    }
 
     public static implicit operator MainController(ParticleSystem v)
     {

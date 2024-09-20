@@ -18,7 +18,8 @@ public class bot : MonoBehaviour
     private Transform player;
     private float nextFireTime, nextRandTime;
     private Rigidbody2D botRb;
-    public GameObject explosionPrefab, playerObj;
+    public GameObject explosionPrefab;
+    public GameObject[] playerObj;
 
 
     void Start()
@@ -27,48 +28,16 @@ public class bot : MonoBehaviour
         photonView.RPC("changeRocketSkin", RpcTarget.AllViaServer);
 
         botRb = gameObject.GetComponent<Rigidbody2D>();
-        InvokeRepeating("setPlayer", 1f, 20f);
+        InvokeRepeating("setPlayer", 1f, 10f);
     }
 
     void Update()
     {
         
         // Move towards the player
-        distance = new Vector2(gameObject.transform.position.x - playerObj.transform.position.x, gameObject.transform.position.y - playerObj.transform.position.y);
         propulsion();
-        
+        botWorking();
 
-        if (distance.magnitude <= 25f)
-        {
-            gameObject.transform.DOMove(playerObj.transform.position, 4f, false);
-
-            direction = (playerObj.transform.position - transform.position).normalized;
-
-            // Calculate the angle between the object's forward vector and the direction vector
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-            float newAngle = Mathf.LerpAngle(transform.rotation.z, angle, 20f * Time.deltaTime);
-
-            // Apply the rotation to the object
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle-90f));
-
-        }
-        else if(nextRandTime < Time.time)
-        {
-            Vector2 randomMovement = new Vector2(transform.position.x + Random.Range(-6f, 6f), transform.position.y + Random.Range(-6f, 6f));
-            gameObject.transform.DOMove(randomMovement, 3f, false);
-            directionRandom = (randomMovement - new Vector2(transform.position.x, transform.position.y)).normalized;
-
-            // Calculate the angle between the object's forward vector and the direction vector
-            float angle = Mathf.Atan2(directionRandom.y, directionRandom.x) * Mathf.Rad2Deg;
-            float newAngle = Mathf.LerpAngle(transform.rotation.z, angle, 20f * Time.deltaTime);
-
-            // Apply the rotation to the object
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90f));
-            nextRandTime = Time.time + 3f;
-        }
-        // Check if within shooting range
-            Shoot();
     }
 
     void Shoot()
@@ -100,6 +69,41 @@ public class bot : MonoBehaviour
         //bulletRigidbody.velocity = currentDirection * missileSpeed;
         bulletRigidbody.AddForce(force);
         Physics2D.IgnoreCollision(GetComponent<Collider2D>(), bullet.GetComponent<Collider2D>());
+    }
+    private void botTargeting(GameObject gameobj)
+    {
+        distance = new Vector2(gameObject.transform.position.x - gameobj.transform.position.x, gameObject.transform.position.y - gameobj.transform.position.y);
+        if (distance.magnitude <= 25f)
+        {
+            gameObject.transform.DOMove(gameobj.transform.position, 4f, false);
+
+            direction = (gameobj.transform.position - transform.position).normalized;
+
+            // Calculate the angle between the object's forward vector and the direction vector
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            float newAngle = Mathf.LerpAngle(transform.rotation.z, angle, 20f * Time.deltaTime);
+
+            // Apply the rotation to the object
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90f));
+
+        }
+        else if (nextRandTime < Time.time)
+        {
+            Vector2 randomMovement = new Vector2(transform.position.x + Random.Range(-6f, 6f), transform.position.y + Random.Range(-6f, 6f));
+            gameObject.transform.DOMove(randomMovement, 3f, false);
+            directionRandom = (randomMovement - new Vector2(transform.position.x, transform.position.y)).normalized;
+
+            // Calculate the angle between the object's forward vector and the direction vector
+            float angle = Mathf.Atan2(directionRandom.y, directionRandom.x) * Mathf.Rad2Deg;
+            float newAngle = Mathf.LerpAngle(transform.rotation.z, angle, 20f * Time.deltaTime);
+
+            // Apply the rotation to the object
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90f));
+            nextRandTime = Time.time + 3f;
+        }
+        // Check if within shooting range
+        Shoot();
     }
     public void onClickFireMissile()
     {
@@ -152,6 +156,20 @@ public class bot : MonoBehaviour
     }
     private void setPlayer()
     {
-        playerObj = GameObject.FindGameObjectWithTag("Player");
+        playerObj = GameObject.FindGameObjectsWithTag("Player");
+    }
+    void botWorking()
+    {
+        foreach (GameObject g in playerObj)
+        {
+            Vector2 distanceBetPlayer = new Vector2(gameObject.transform.position.x - g.transform.position.x, gameObject.transform.position.y - g.transform.position.y);
+
+            if (distanceBetPlayer.magnitude <= 25f)
+            {
+                botTargeting(g);
+            }
+            else continue;
+        }
+
     }
 }
