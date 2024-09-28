@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using DG.Tweening;
+using UnityEngine.UI;
 
 public class bot : MonoBehaviour
 {
@@ -55,7 +56,6 @@ public class bot : MonoBehaviour
             FindObjectOfType<AudioMnagaer>().Play("explosion");
             Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
             Destroy(collision.gameObject);
-            
             gameObject.transform.position = initialPos;
             gameObject.SetActive(false);
             Invoke("respawnBot", 12f);
