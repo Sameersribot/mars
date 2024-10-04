@@ -10,7 +10,7 @@ public class multiplayerSpawner : MonoBehaviour
     public GameObject[] missiles;
     public GameObject[] weapons;
     public GameObject petrolPrefab;  // Reference to the petrol prefab
-    public GameObject bot;
+
 
     public Vector2 spawnPoint;    // Point where petrol objects should be spawned
     private float spawnInterval = 15f;  // Time interval between petrol spawns
@@ -28,6 +28,7 @@ public class multiplayerSpawner : MonoBehaviour
         InvokeRepeating("SpawnPower", spawnPowerInterval, spawnPowerInterval);
         InvokeRepeating("SpawnWeapons", 2f, spawnInterval);
     }
+
     private void SpawnPlayer()
     {
         for (int i = 0; i < skins.Length; i++)

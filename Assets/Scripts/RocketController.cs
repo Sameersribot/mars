@@ -8,7 +8,7 @@ using UnityEngine.Audio;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
 
-public class RocketController : MonoBehaviour
+public class RocketController : MonoBehaviourPunCallbacks
 {
     public PhotonView photonView, otherPlayerPhotonView;
     public float speed = 5f;  // Speed of the rocket movement
@@ -21,7 +21,7 @@ public class RocketController : MonoBehaviour
     public Vector3 otherPlayerPosition, playerSpwanPosition;
     public ParticleSystem propulsion, electricPwr, bulletTrail;
     public GameObject playerCamera, cvCam, otherPlayerCollision;
-    public GameObject playerCanvas, audiosrc, nitroParticles;
+    public GameObject playerCanvas, audiosrc, nitroParticles, mainGun;
     public GameObject background;
     public GameObject redDot, whiteDot;
     public Text text, killsText, leaderBordText, whokilldwho, respawnTimer;//who killed whom text
@@ -53,6 +53,7 @@ public class RocketController : MonoBehaviour
     public Sprite[] weaponIcons;
     public Image weaponIconImage;
     private bool[] whichWeapon;
+    private int x=0;
     public float frictionForce = 0.5f; // Adjust this value to change the strength of the friction
     public string nameOfShooter, nameofGotShot;
 
@@ -62,7 +63,6 @@ public class RocketController : MonoBehaviour
         PhotonNetwork.SendRate = 40; //Default is 30
         PhotonNetwork.SerializationRate = 20;
         fuelpower = 60f;
-
         if (photonView.IsMine)
         {
             playerCanvas.SetActive(true);
@@ -101,12 +101,10 @@ public class RocketController : MonoBehaviour
         Vector3 backgroundMovement = playerMovement * parallaxFactor;
         bground.transform.position = initialPosition + backgroundMovement;
         refresh();
-        
+        if(photonView.IsMine) statusOfWeapons();
         blackholePhysics();
         photonView.RPC("propulsionVisibility", RpcTarget.AllViaServer);
     }
-
-
     
     void FixedUpdate()
     {
@@ -127,7 +125,6 @@ public class RocketController : MonoBehaviour
         {
             movement = new Vector2(joystick.Horizontal, joystick.Vertical) * speed;
             zoon();
-            Debug.Log(buttonPressed.usingNox);
             if (movement.magnitude > 0.1f)// && currentFuel >= 0f
             {
                 //rb.velocity = movement*1.5f;
@@ -144,7 +141,6 @@ public class RocketController : MonoBehaviour
                     rb.velocity = movement * 3f;
                     nitroParticles.SetActive(true);
                     FindObjectOfType<AudioMnagaer>().Play("thrust");
-                    Debug.Log("velocty is3");
                 }
                 /*if (cosTheta <= 0.5f && rb.velocity.magnitude < 16.2f)
                 {
@@ -161,8 +157,9 @@ public class RocketController : MonoBehaviour
                     {
                         rb.AddForce(movement * 0.32f);
                     }
-                }
-                else                      SAMEER SRIVASTAVA WILL CHANGE THE WORLD ......
+                }                          ________________________________________
+                else                      |SAMEER SRIVASTAVA WILL CHANGE THE WORLD|......
+                                          ------------------------------------------
                 { this function is for for movement
                     rb.AddForce(movement * 0.32f);
                 }*/
@@ -212,7 +209,7 @@ public class RocketController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "missile" && !electricPwrOn)
+        if (collision.gameObject.CompareTag("missile") && !electricPwrOn)
         {
             Destroy(collision.gameObject);
             Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
@@ -231,7 +228,6 @@ public class RocketController : MonoBehaviour
                     InvokeRepeating("setTimer", 0.5f, 1f);
                 }
                 photonView.RPC("collisionWithRocket",RpcTarget.AllViaServer);
-                  
             }
 
             //restartButton.SetActive(true);
@@ -240,7 +236,7 @@ public class RocketController : MonoBehaviour
                 collision.gameObject.GetComponent<missile>().ownerId.AddKill();
             }
         }
-        else if (collision.gameObject.tag == "hammer" && !electricPwrOn)
+        else if (collision.gameObject.CompareTag("hammer") && !electricPwrOn)
         {
             Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
             Destroy(gameObject);
@@ -271,20 +267,19 @@ public class RocketController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "fuel")
+        if (collision.gameObject.CompareTag("fuel"))
         {
             currentFuel = Mathf.Clamp(currentFuel + fuelpower, 0f, fuelCapacity);
             Destroy(collision.gameObject);
         }
-        else if (collision.gameObject.tag == "petrolpump")
+        else if (collision.gameObject.CompareTag("petrolpump")) 
         {
             StartRefueling();
         }
-        else if (collision.gameObject.tag == "teleporter")
+        else if (collision.gameObject.CompareTag("teleporter"))
         {
             int ft = (int)Random.Range(1f, 6f);
             FindObjectOfType<AudioMnagaer>().Play("teleport");
-            Debug.Log(ft);
             switch (ft)
             {
                 case (1): 
@@ -305,7 +300,7 @@ public class RocketController : MonoBehaviour
             }
         }
        
-        else if (collision.gameObject.tag == "redPower")
+        else if (collision.gameObject.CompareTag("redPower"))
         {
             redRocketPowerEffect.SetActive(true);
             redRocketPowerEffect.GetComponent<ParticleSystem>().Play(true);
@@ -313,7 +308,7 @@ public class RocketController : MonoBehaviour
             Invoke("sparksPwrOff", 10f);
             Destroy(collision.gameObject);
         }
-        else if (collision.gameObject.tag == "bluePower")
+        else if (collision.gameObject.CompareTag("bluePower"))
         {
             electricPwr.gameObject.SetActive(true);
             electricPwr.Play(true);
@@ -321,32 +316,32 @@ public class RocketController : MonoBehaviour
             Invoke("electricPowerOff", 10f);
             Destroy(collision.gameObject);
         }
-        else if (collision.gameObject.tag == "blackhole")
+        else if (collision.gameObject.CompareTag("blackhole"))
         {
             blackholeTarget = collision.gameObject;
             isInblackhole = true;
         }
-        else if (collision.gameObject.tag == "greenPower" && photonView.IsMine)
+        else if (collision.gameObject.CompareTag("greenPower") && photonView.IsMine)
         {
             lifeSlider.value = 1f;
             Destroy(collision.gameObject);
         }
-        else if (collision.gameObject.tag == "bulletGain")
+        else if (collision.gameObject.CompareTag("bulletGain"))
         {
             Destroy(collision.gameObject);
             //whichWeapon[0] = true;
         }
-        else if (collision.gameObject.tag == "bombGain")
+        else if (collision.gameObject.CompareTag("bombGain"))
         {
             Destroy(collision.gameObject);
             //whichWeapon[1] = true;
         }
-        else if (collision.gameObject.tag == "redmissileGain")
+        else if (collision.gameObject.CompareTag("redmissileGain")) 
         {
             Destroy(collision.gameObject);
             //whichWeapon[2] = true;
         }
-        else if (collision.gameObject.tag == "hammerGain")
+        else if (collision.gameObject.CompareTag("hammerGain")) 
         {
             Destroy(collision.gameObject);
             //whichWeapon[3] = true;
@@ -354,11 +349,11 @@ public class RocketController : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "petrolpump")
+        if (collision.gameObject.CompareTag("petrolpump"))
         {
             StopRefueling();
         }
-        else if (collision.gameObject.tag == "blackhole")
+        else if (collision.gameObject.CompareTag("blackhole"))
         {
             isInblackhole = false;
         }
@@ -394,12 +389,7 @@ public class RocketController : MonoBehaviour
         if (photonView.IsMine) voices[1].Play();
         bulletRigidbody.AddForce(force);
         Physics2D.IgnoreCollision(GetComponent<Collider2D>(), bullet.GetComponent<Collider2D>());
-        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), missiles[3].GetComponent<Collider2D>());
-
-        missile missileScript = bullet.GetComponent<missile>();
-        missileScript.shooterName = photonView.Owner.NickName; // Set the shooter's name here
-        missileScript.ownerId = this;
-        
+        bullet.GetComponent<missile>().ownerId = this;
     }
     private void setTimer()
     {
@@ -423,7 +413,6 @@ public class RocketController : MonoBehaviour
 
             bulletRigidbody.AddForce(force);
             Physics2D.IgnoreCollision(GetComponent<Collider2D>(), bullet.GetComponent<Collider2D>());
-            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), missiles[3].GetComponent<Collider2D>());
 
             bullet.GetComponent<missile>().ownerId = this;
             //bullet.GetComponent<missile>().shooterName = photonView.Owner.NickName;
@@ -490,7 +479,6 @@ public class RocketController : MonoBehaviour
         weapon++;
         if(photonView.IsMine) FindObjectOfType<AudioMnagaer>().Play("weaponChange");
         weaponIconImage.sprite = weaponIcons[weapon%7];
-        Debug.Log("clicked");
     }
     public void onClickFireBomb()
     {
@@ -542,9 +530,10 @@ public class RocketController : MonoBehaviour
         if (dirToShoot.magnitude > 0f)
         {
             arrowTrget.SetActive(true);
-
             Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle + 90f);
+            Quaternion targetRotation2 = Quaternion.Euler(0f, 0f, angle);
             arrowTrget.transform.rotation = Quaternion.Slerp(arrowTrget.transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            mainGun.transform.rotation = Quaternion.Slerp(mainGun.transform.rotation, targetRotation2, rotationSpeed * Time.fixedDeltaTime);
         }
         else
         {
@@ -553,7 +542,7 @@ public class RocketController : MonoBehaviour
         if (dirToShoot.magnitude == 10f && Time.time >= nextFireTime)
         {
 
-            int x = weapon % 7;
+            x= weapon % 7;
             Vector3 missilePosition = new Vector3(this.transform.position.x , this.transform.position.y + rb.velocity.y * missileAdjustment, this.transform.position.z);
 
             Vector2 randomForce = currentDirection * missileSpeed * 50f;
@@ -564,7 +553,6 @@ public class RocketController : MonoBehaviour
                 case 0:
                     photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 30f);
                     nextFireTime = Time.time + 0.15f;
-                    
                     break;
                 case 1:
                     onClickFireMine();
@@ -597,7 +585,13 @@ public class RocketController : MonoBehaviour
             }
         }        
     }
-
+    
+    void statusOfWeapons()
+    {
+        if (x != 3) missiles[3].SetActive(false);
+        if (x != 0) mainGun.SetActive(false);
+        if (x == 0) mainGun.SetActive(true);
+    }
     void breakForce()
     {
         if (rb.velocity.magnitude > 0f && movement.magnitude < 0.1f)
@@ -630,6 +624,7 @@ public class RocketController : MonoBehaviour
             //do nothing
         }
     }
+    
     public void refresh()
     {
         int i = 0;
@@ -647,6 +642,8 @@ public class RocketController : MonoBehaviour
             }
         }
     }
+   
+    // Called when disconnected from Photon
 
     private void blackholePhysics()
     {
@@ -670,7 +667,7 @@ public class RocketController : MonoBehaviour
     }
     public void OnJoystickClicked()
     {
-        Vector2 dirToShoot = new Vector2(weaponJoystick.Horizontal, weaponJoystick.Vertical) * 10f;
+        Vector2 dirToShoot = new Vector2(joystick.Horizontal, joystick.Vertical) * 10f;
         float angle = Mathf.Atan2(dirToShoot.y, dirToShoot.x) * Mathf.Rad2Deg;
         if (movement.magnitude > 0.01f && Time.time >= nextFireTime)
         {
@@ -683,7 +680,7 @@ public class RocketController : MonoBehaviour
             switch (x)
             {
                 case 0:
-                    photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 30f);
+                    photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 50f);
                     nextFireTime = Time.time + 0.12f;
 
                     break;

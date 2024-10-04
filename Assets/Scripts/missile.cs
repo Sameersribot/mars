@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class missile : MonoBehaviour
 {
     public GameObject explosionPrefab;
     public RocketController ownerId;
-    public string shooterName;
+
     private void Awake()
     {
         /*if (ownerId.gameObject.GetPhotonView() != null)
@@ -20,7 +21,9 @@ public class missile : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
     }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "wall")
@@ -31,13 +34,12 @@ public class missile : MonoBehaviour
         if (collision.gameObject.tag == "bot" && gameObject.tag != "hammer")
         {
             ownerId.AddKill();
-            Debug.Log(shooterName + " killed bot");
             //ownerId.whokilldwho.text = ownerId.name + "killed bot"; 
         }
         else if (collision.gameObject.tag == "bot" && gameObject.tag == "hammer")
         {
             Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
-            Debug.Log("hit me ");
+
             Destroy(collision.gameObject);
         }
     }

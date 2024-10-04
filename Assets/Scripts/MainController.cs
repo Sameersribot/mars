@@ -53,9 +53,6 @@ public class MainController : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        // Read the tilt input
-        tiltInput.x = Input.acceleration.x;
-        tiltInput.y = Input.acceleration.y;
     }
 
     public override void OnConnectedToMaster()
@@ -89,6 +86,7 @@ public class MainController : MonoBehaviourPunCallbacks
     {
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
+
         PhotonNetwork.CreateRoom(Random.Range(1f,2f).ToString(), roomOptions, null);
     }
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -98,6 +96,7 @@ public class MainController : MonoBehaviourPunCallbacks
         ConnectPanel.SetActive(true);
         loadingPanel.SetActive(false);
     }
+
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined a room!");

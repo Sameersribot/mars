@@ -1099,13 +1099,13 @@ MonoBehaviour:
   rocketSkin: {fileID: 1812413763}
   spriteRenderer: {fileID: 1812413764}
   sprites:
-  - {fileID: 21300000, guid: d87e760f86ae4a6439fdd6ac9b1d8262, type: 3}
-  - {fileID: 21300000, guid: 7262b97c4480512458898593bada3e6a, type: 3}
-  - {fileID: 21300000, guid: 7cab25abf6d1b8545b573e763d91e76d, type: 3}
-  - {fileID: 21300000, guid: 3c5fa8c40fead4444b87caea81ae49c0, type: 3}
-  - {fileID: 21300000, guid: 8dc6d49a7ca787c4c9103b3d966f0e51, type: 3}
-  - {fileID: 21300000, guid: 220e205f42ee48f49bbd11020d87b638, type: 3}
-  - {fileID: 21300000, guid: cf984dfb28db7044889fb481002797d2, type: 3}
+  - {fileID: 21300000, guid: 01bd6479d1046f646be5f88748733c11, type: 3}
+  - {fileID: 21300000, guid: d7e3a19c6dec6c04f8e3572b3341664e, type: 3}
+  - {fileID: 21300000, guid: 4e9c644c02cd62140bd27801b4ec3eeb, type: 3}
+  - {fileID: 21300000, guid: 01bd6479d1046f646be5f88748733c11, type: 3}
+  - {fileID: 21300000, guid: d7e3a19c6dec6c04f8e3572b3341664e, type: 3}
+  - {fileID: 21300000, guid: 4e9c644c02cd62140bd27801b4ec3eeb, type: 3}
+  - {fileID: 21300000, guid: 01bd6479d1046f646be5f88748733c11, type: 3}
   btnwhite: {fileID: 21300000, guid: b281b91a70a624a0da1c43adc1c30c7b, type: 3}
   btnUsername: {fileID: 583756093}
   shiftAmount: 0.28

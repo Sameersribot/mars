@@ -26,7 +26,7 @@ public class bot : MonoBehaviour
     void Start()
     {
         initialPos = gameObject.transform.position;
-        photonView.RPC("changeRocketSkin", RpcTarget.AllViaServer);
+        changeRocketSkin();
 
         botRb = gameObject.GetComponent<Rigidbody2D>();
         InvokeRepeating("setPlayer", 1f, 10f);
@@ -51,7 +51,7 @@ public class bot : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "missile")
+        if(collision.gameObject.CompareTag("missile"))
         {
             FindObjectOfType<AudioMnagaer>().Play("explosion");
             Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
@@ -132,7 +132,7 @@ public class bot : MonoBehaviour
             particleSystem.Stop();
         }
     }
-    [PunRPC]
+
     void changeRocketSkin()
     {
         renderer = gameObject.GetComponent<SpriteRenderer>();
