@@ -1571,7 +1571,7 @@ SpriteRenderer:
   m_Size: {x: 7.02, y: 3.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2872719014442512468
@@ -1664,7 +1664,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9063059603866948078
 Transform:
   m_ObjectHideFlags: 0
@@ -3182,7 +3182,7 @@ SpriteRenderer:
   m_SortingLayerID: 68920433
   m_SortingLayer: 1
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: 95b554093080fdc43af0a21ca676d89e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d7f8ed1ff2c1b0949b0f229b912ef3c6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3231,6 +3231,7 @@ MonoBehaviour:
   background: {fileID: 2608948485114541956}
   redDot: {fileID: 4039828363215286761}
   whiteDot: {fileID: 6959860768363886708}
+  greenPowerEfct: {fileID: 0}
   text: {fileID: 5208497902247232698}
   killsText: {fileID: 0}
   leaderBordText: {fileID: 574771246742439602}

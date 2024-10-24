@@ -26,7 +26,7 @@ public class bot : MonoBehaviour
     void Start()
     {
         initialPos = gameObject.transform.position;
-        changeRocketSkin();
+        photonView.RPC("changeRocketSkin", RpcTarget.AllViaServer);
 
         botRb = gameObject.GetComponent<Rigidbody2D>();
         InvokeRepeating("setPlayer", 1f, 10f);
@@ -90,8 +90,10 @@ public class bot : MonoBehaviour
         }
         else if (nextRandTime < Time.time)
         {
+            nextRandTime = Time.time + 3f;
+
             Vector2 randomMovement = new Vector2(transform.position.x + Random.Range(-6f, 6f), transform.position.y + Random.Range(-6f, 6f));
-            gameObject.transform.DOMove(randomMovement, 3f, false);
+            gameObject.transform.DOMove(randomMovement, 3f, true);
             directionRandom = (randomMovement - new Vector2(transform.position.x, transform.position.y)).normalized;
 
             // Calculate the angle between the object's forward vector and the direction vector
@@ -100,7 +102,6 @@ public class bot : MonoBehaviour
 
             // Apply the rotation to the object
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90f));
-            nextRandTime = Time.time + 3f;
         }
         // Check if within shooting range
         Shoot();
@@ -111,7 +112,7 @@ public class bot : MonoBehaviour
         Vector3 missilePosition = new Vector3(this.transform.position.x + botRb.velocity.x * 0.2f, this.transform.position.y + botRb.velocity.x * 0.2f, this.transform.position.z);
         Vector2 missileDirection = new Vector2(transform.rotation.x, transform.rotation.y);
         
-        Vector2 randomForce = direction *1250f;
+        Vector2 randomForce = direction *800f;
 
         //photonView.RPC("ShootTriBomb", RpcTarget.AllViaServer, missilePosition, this.transform.rotation, missileDirection);
         photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, this.transform.rotation, missileDirection, randomForce);
@@ -132,7 +133,7 @@ public class bot : MonoBehaviour
             particleSystem.Stop();
         }
     }
-
+    [PunRPC]
     void changeRocketSkin()
     {
         renderer = gameObject.GetComponent<SpriteRenderer>();

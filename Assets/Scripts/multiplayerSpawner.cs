@@ -10,6 +10,8 @@ public class multiplayerSpawner : MonoBehaviour
     public GameObject[] missiles;
     public GameObject[] weapons;
     public GameObject petrolPrefab;  // Reference to the petrol prefab
+    [SerializeField] private float[] randomXPower;
+    [SerializeField] private float[] randomYPower;
 
 
     public Vector2 spawnPoint;    // Point where petrol objects should be spawned
@@ -25,7 +27,7 @@ public class multiplayerSpawner : MonoBehaviour
     private void Start()
     {
         InvokeRepeating("SpawnPetrol", spawnInterval, spawnInterval);
-        InvokeRepeating("SpawnPower", spawnPowerInterval, spawnPowerInterval);
+        InvokeRepeating("SpawnPower", 3f, spawnPowerInterval);
         InvokeRepeating("SpawnWeapons", 2f, spawnInterval);
     }
 
@@ -60,8 +62,14 @@ public class multiplayerSpawner : MonoBehaviour
 
     private void SpawnPower()
     {
-        float x = Random.Range(-66f, 25.1f);
-        float y = Random.Range(326.5f, 515f);
+        int k;
+        while (true)
+        {
+            k = Mathf.FloorToInt(Random.Range(0f, 8f));
+            if (k % 2 == 0) break; 
+        }
+        float x = Random.Range(randomXPower[k], randomXPower[k + 1]);
+        float y = Random.Range(randomYPower[k], randomYPower[k + 1]);
         Vector3 randomPowerPosition = new Vector3(x, y, -2.2f);
         int typeOfPower = UnityEngine.Random.Range(0, powers.Length + 1);
 

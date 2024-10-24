@@ -21,12 +21,16 @@ public class RocketController : MonoBehaviourPunCallbacks
     public Vector3 otherPlayerPosition, playerSpwanPosition;
     public ParticleSystem propulsion, electricPwr, bulletTrail;
     public GameObject playerCamera, cvCam, otherPlayerCollision;
-    public GameObject playerCanvas, audiosrc, nitroParticles, mainGun;
+    public GameObject playerCanvas, audiosrc, mainGun;
     public GameObject background;
-    public GameObject redDot, whiteDot;
+    public GameObject redDot, whiteDot, greenPowerEfct;
     public Text text, killsText, leaderBordText, whokilldwho, respawnTimer;//who killed whom text
     private int playerId;
     public CinemachineVirtualCamera virtualCamera;
+    private float shakeIntensity = 1.5f;
+    private float shakeTime = 0.1f;
+    private float timerShake;
+    private CinemachineBasicMultiChannelPerlin _cameraChannelPerlin;
     public float fuelCapacity = 100f;
     public float fuelConsumptionRate = 4f;
     public float refuelRate = 20f;
@@ -45,7 +49,7 @@ public class RocketController : MonoBehaviourPunCallbacks
     private int kills, seconds = 6;
     private int weapon = 0;
     private float nextFireTime, proplsnValue;
-    private bool isInblackhole, electricPwrOn, sparksPwrOn;
+    private bool isInblackhole, electricPwrOn, sparksPwrOn, playThrust;
     private int[] killsData;
     public GameObject dulmissile, pointerMissile, lifeUi, respawningUI;
     public AudioSource[] voices;
@@ -103,6 +107,8 @@ public class RocketController : MonoBehaviourPunCallbacks
         refresh();
         if(photonView.IsMine) statusOfWeapons();
         blackholePhysics();
+        if (playThrust && !voices[2].isPlaying) voices[2].Play();
+        else voices[2].Stop();
         photonView.RPC("propulsionVisibility", RpcTarget.AllViaServer);
     }
     
@@ -127,26 +133,30 @@ public class RocketController : MonoBehaviourPunCallbacks
             zoon();
             if (movement.magnitude > 0.1f)// && currentFuel >= 0f
             {
+                playThrust = true;
                 //rb.velocity = movement*1.5f;
                 float cosTheta = Vector3.Dot(rb.velocity.normalized, currentDirection) / (rb.velocity.normalized.magnitude * currentDirection.magnitude);
+                //Debug.Log(movement.x);
+                //Debug.Log(movement.y);
 
-                if (!buttonPressed.usingNox)
+                //rb.AddForce(movement);
+                /*if (!buttonPressed.usingNox)
                 {
                     rb.velocity = movement * 1.9f;
                     FindObjectOfType<AudioMnagaer>().Pause("thrust");
-                    nitroParticles.SetActive(false);
+                    //nitroParticles.SetActive(false);
                 }
                 else if (buttonPressed.usingNox)
                 {
                     rb.velocity = movement * 3f;
-                    nitroParticles.SetActive(true);
+                    //nitroParticles.SetActive(true);
                     FindObjectOfType<AudioMnagaer>().Play("thrust");
-                }
-                /*if (cosTheta <= 0.5f && rb.velocity.magnitude < 16.2f)
+                }*/
+                if (cosTheta <= 0.6f) //&& rb.velocity.magnitude < 16.2f)
                 {
-                    rb.AddForce(movement * 1f);
+                    rb.AddForce(movement * 2f);
                 }
-                else if (cosTheta >= 0.5f)
+                else 
                 {
                     if (rb.velocity.magnitude > 15)
                     {
@@ -155,16 +165,14 @@ public class RocketController : MonoBehaviourPunCallbacks
                     }
                     else
                     {
-                        rb.AddForce(movement * 0.32f);
+                        rb.AddForce(movement * 0.55f);
                     }
-                }                          ________________________________________
-                else                      |SAMEER SRIVASTAVA WILL CHANGE THE WORLD|......
-                                          ------------------------------------------
-                { this function is for for movement
-                    rb.AddForce(movement * 0.32f);
-                }*/
-                    //rb.velocity =movement;
-                    //FindObjectOfType<AudioMnagaer>().Play("thrust");
+                }                      // ________________________________________
+                                      //|SAMEER SRIVASTAVA WILL CHANGE THE WORLD|......
+                                         // ------------------------------------------
+                //this function is for for movement
+                //rb.velocity =movement;
+                //FindObjectOfType<AudioMnagaer>().Play("thrust");
                 currentDirection = Vector2.Lerp(currentDirection, movement.normalized, rotationSpeed * Time.fixedDeltaTime);
                 float angle = Mathf.Atan2(currentDirection.y, currentDirection.x) * Mathf.Rad2Deg;
                 Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle - 90);
@@ -176,6 +184,7 @@ public class RocketController : MonoBehaviourPunCallbacks
             else
             {
                 currentDirection = Vector2.zero; // Reset the direction when joystick is in the dead zone
+                playThrust = false;
             }
         }
     }
@@ -310,6 +319,7 @@ public class RocketController : MonoBehaviourPunCallbacks
         }
         else if (collision.gameObject.CompareTag("bluePower"))
         {
+            if(photonView.IsMine)FindObjectOfType<AudioMnagaer>().Play("electricpwr");
             electricPwr.gameObject.SetActive(true);
             electricPwr.Play(true);
             electricPwrOn = true;
@@ -323,6 +333,8 @@ public class RocketController : MonoBehaviourPunCallbacks
         }
         else if (collision.gameObject.CompareTag("greenPower") && photonView.IsMine)
         {
+            Instantiate(greenPowerEfct, gameObject.transform.position, Quaternion.identity);
+            FindObjectOfType<AudioMnagaer>().Play("healthPwr");
             lifeSlider.value = 1f;
             Destroy(collision.gameObject);
         }
@@ -388,6 +400,7 @@ public class RocketController : MonoBehaviourPunCallbacks
         bullet.transform.rotation = Quaternion.Slerp(bullet.transform.rotation, targetRotation, Time.deltaTime);
         if (photonView.IsMine) voices[1].Play();
         bulletRigidbody.AddForce(force);
+        //bullet.transform.Translate(force*100f);
         Physics2D.IgnoreCollision(GetComponent<Collider2D>(), bullet.GetComponent<Collider2D>());
         bullet.GetComponent<missile>().ownerId = this;
     }
@@ -552,6 +565,12 @@ public class RocketController : MonoBehaviourPunCallbacks
             {
                 case 0:
                     photonView.RPC("ShootBullet", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 30f);
+                    if (photonView.IsMine)
+                    {
+                        shakeCamera();
+                        Invoke("stopShake", timerShake);
+                    }
+
                     nextFireTime = Time.time + 0.15f;
                     break;
                 case 1:
@@ -573,19 +592,30 @@ public class RocketController : MonoBehaviourPunCallbacks
                     break;
                 case 4:
                     dulmissile.SetActive(true);
-                    photonView.RPC("ShootDualMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 100f);
+                    photonView.RPC("ShootDualMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 160f);
                    
                     nextFireTime = Time.time + 1f;
                     break;
                 case 5:
                     pointerMissile.SetActive(true);
-                    photonView.RPC("ShootPointerMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 120f);
+                    photonView.RPC("ShootPointerMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 160f);
                     nextFireTime = Time.time + 0.8f;
                     break;
             }
         }        
     }
-    
+
+    private void shakeCamera()
+    {
+        _cameraChannelPerlin = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        _cameraChannelPerlin.m_AmplitudeGain = shakeIntensity;
+        timerShake = shakeTime;
+    }
+    void stopShake()
+    {
+        _cameraChannelPerlin.m_AmplitudeGain = 0f;
+        timerShake = 0f;
+    }
     void statusOfWeapons()
     {
         if (x != 3) missiles[3].SetActive(false);
@@ -703,7 +733,7 @@ public class RocketController : MonoBehaviourPunCallbacks
                     break;
                 case 4:
                     dulmissile.SetActive(true);
-                    photonView.RPC("ShootDualMissile", RpcTarget.AllViaServer, missilePosition, arrowTrget.transform.rotation, dirToShoot * 100f);
+                    photonView.RPC("ShootDualMissile", RpcTarget.AllViaServer, missilePosition, dirToShoot, dirToShoot * 100f);
 
                     nextFireTime = Time.time + 1f;
                     break;

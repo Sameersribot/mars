@@ -1,6 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System.Collections;
+using System.Collections;                    //THIS PROJECT WILL COMPLETE BY 8 NOV 2024
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,10 +8,10 @@ using UnityEngine.UI;
 public class MainController : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
-    [SerializeField] private GameObject UsernameMenu;
+    [SerializeField] private GameObject UsernameMenu, settingsMenu, skinSelectionMenu;
     [SerializeField] private GameObject ConnectPanel;
     [SerializeField] private InputField UsernameInput;
-
+    [SerializeField] private Text nameTopText;
 
     [SerializeField] private InputField CreateInput;
     [SerializeField] private InputField JoinInput;
@@ -38,7 +38,16 @@ public class MainController : MonoBehaviourPunCallbacks
     {
         UsernameMenu.SetActive(true);
         FindObjectOfType<AudioMnagaer>().Play("start");
+        string usernameCatch = PlayerPrefs.GetString("name");
         startPosition = ccamera.transform.position;
+        if(usernameCatch != null)
+        {
+            UsernameMenu.SetActive(false);
+            PhotonNetwork.NickName = usernameCatch;
+            nameTopText.text = usernameCatch;
+            ConnectPanel.SetActive(true);
+            rocketSkin.SetActive(true);
+        }
         if (sprites.Length > 0)
         {
             spriteRenderer.sprite = sprites[currentIndex];
@@ -68,7 +77,7 @@ public class MainController : MonoBehaviourPunCallbacks
     {
         btnUsername.GetComponent<Image>().sprite = btnwhite;
         FindObjectOfType<AudioMnagaer>().Play("pop");
-
+        PlayerPrefs.SetString("name", UsernameInput.text);
         UsernameMenu.SetActive(false);
         PhotonNetwork.NickName = UsernameInput.text;
         ConnectPanel.SetActive(true);
@@ -96,7 +105,11 @@ public class MainController : MonoBehaviourPunCallbacks
         ConnectPanel.SetActive(true);
         loadingPanel.SetActive(false);
     }
-
+    public void onclickSettings()
+    {// the main menu is connect panel
+        settingsMenu.SetActive(true);
+        ConnectPanel.SetActive(false);
+    }
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined a room!");
@@ -129,26 +142,35 @@ public class MainController : MonoBehaviourPunCallbacks
     }
     public void changeSkin()
     {
-        leftButton.SetActive(true);
-        Rightbutton.SetActive(true);
-    }
-    public void leftButtonClick()
-    {
-        // Decrease the current index and wrap around
-        currentIndex = (currentIndex - 1 + sprites.Length) % sprites.Length;
+        skinSelectionMenu.SetActive(true);
+        ConnectPanel.SetActive(false);
         FindObjectOfType<AudioMnagaer>().Play("pop");
 
-        spriteRenderer.sprite = sprites[currentIndex];
-        Debug.Log(currentIndex);
     }
-    public void rightButtonclick()
+    public void skin1()
     {
-        // Increase the current index and wrap around
-        currentIndex = (currentIndex + 1) % sprites.Length;
-        spriteRenderer.sprite = sprites[currentIndex];
+        currentIndex = 0;
         FindObjectOfType<AudioMnagaer>().Play("pop");
-
-        Debug.Log(currentIndex);
+    }public void skin2()
+    {
+        currentIndex = 1;
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+    }public void skin3()
+    {
+        currentIndex = 2;
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+    }public void skin4()
+    {
+        currentIndex = 3;
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+    }
+    public void cutSkinmenu()
+    {
+        skinSelectionMenu.SetActive(false);
+        FindObjectOfType<AudioMnagaer>().Play("pop");
+        ConnectPanel.SetActive(true);
+        spriteRenderer.sprite = sprites[currentIndex];
+        PlayerPrefs.SetInt("skinIndex", currentIndex);
     }
     public void onClickjoinRoom()
     {
@@ -165,6 +187,11 @@ public class MainController : MonoBehaviourPunCallbacks
         ConnectPanel.SetActive(true);
         rocketSkin.SetActive(true);
         joinRoomCanvas.SetActive(false);
+    }
+    public void changeSkinScroll()
+    {
+        currentIndex = (currentIndex + 1) % sprites.Length;
+        Debug.Log(currentIndex);
     }
 
     public static implicit operator MainController(ParticleSystem v)
